@@ -216,6 +216,13 @@ class Dragon(Monster, Warrior):
         self.ch_atk = self.ch_atk_i * 1.5
         self.ch_def = self.ch_def_i * 2.2
         self.ch_acc = self.ch_acc_i * 0.6
+        self.skill_list = {"1": ["Attack", 0, 0, "attack"], "2": ["Burn", 1, 4, "burn"]}
+        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
+        Skill_mode: \n
+        0 Enemy individual \n
+        1 Enemy team \n
+        2 Hero individual \n
+        3 Hero team"""
 
     def burn(self, target):
         pass
@@ -231,6 +238,13 @@ class Vampire(Monster, Warrior):
         self.ch_atk = self.ch_atk_i * 1.0
         self.ch_def = self.ch_def_i * 1.1
         self.ch_acc = self.ch_acc_i * 0.8
+        self.skill_list = {"1": ["Attack", 0, 0, "attack"], "2": ["Bite", 0, 3, "bite"]}
+        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
+        Skill_mode: \n
+        0 Enemy individual \n
+        1 Enemy team \n
+        2 Hero individual \n
+        3 Hero team"""
 
     def bite(self, target):
         pass

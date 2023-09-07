@@ -19,34 +19,49 @@ class Arena:
                 os.system("cls")  # For Windows
             else:
                 os.system("clear")  # For macOS and Linux
-            print()
-            print("- Input b to go back, q for quit.")
-            print("- Stats: ATK / DEF / ACC / LUK\n")
-            print(f'{" HEROES ":-^32}\n')
-            for hero in heroes:
-                print(f"{hero.ch_name} : {hero.ch_class}".ljust(24))
-                print(
-                    (
-                        f"{hero.ch_atk} / {hero.ch_def} / "
-                        f"{hero.ch_acc} / {hero.ch_luk}"
-                    )
-                )
-                hero.show_hp_bar()
-                hero.show_mp_bar()
-                print()
-            print()
-            print(f'{" ENEMIES ":-^32}\n')
-            for enemy in enemies:
-                print(f"{enemy.ch_name} : {enemy.ch_class}")
-                print(
-                    (
-                        f"{enemy.ch_atk} / {enemy.ch_def} / "
-                        f"{enemy.ch_acc} / {enemy.ch_luk}"
-                    )
-                )
-                enemy.show_hp_bar()
-                print()
-            print(f'\n{"":-^32}\n')
+            # print()
+            max_length = max(len(sublist) for sublist in [heroes, enemies])
+            ch_disp = []
+            for i in range(max_length):
+                row = []
+                for sublist in [heroes, enemies]:
+                    if i < len(sublist):
+                        row.append(sublist[i])
+                    else:
+                        row.append(None)
+                ch_disp.append(row)
+
+            j_val = 44
+            # print()
+            print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
+            print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
+            for i in ch_disp:
+                print (f'  - {i[0].ch_name} - {i[0].ch_class}'.ljust(j_val) + '|' 
+                    if i[0] else ''.ljust(j_val) + '|', end = '')
+                print (f'  - {i[1].ch_name} - {i[1].ch_class}'.ljust(j_val) 
+                    if i[1] else '')
+
+                print (f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(
+                    j_val) + '|' if i[0] else ''.ljust(j_val) + '|', end = '')
+                print (f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(
+                    j_val) if i[1] else '')
+
+                print (f'    {i[0].get_hp_bar()}'.ljust(j_val) + '|' 
+                    if i[0] else ''.ljust(j_val) + '|', end = '')
+                print (f'    {i[1].get_hp_bar()}'.ljust(j_val) 
+                    if i[1] else '')
+
+                print (f'    {i[0].get_mp_bar()}'.ljust(j_val) + '|' 
+                    if i[0] else ''.ljust(j_val) + '|', end = '')
+                print (f'    {i[0].get_mp_bar()}'.ljust(j_val)
+                    if i[1] else '')
+                
+                print (
+                    f'   '.ljust(j_val) + '|' + f'   '.ljust(j_val))
+                
+            print (f'{"":=^{j_val*2+1}}')
+            print("* Stats: ATK / DEF / ACC / LUK")
+            print("* Input b to go back, q for quit.")
 
         def select_choice(isRoot, prompt, choice_dict):
             """
@@ -57,7 +72,7 @@ class Arena:
                 - -> output: A validated string of input.
             """
             for choice in choice_dict:
-                print(f"{choice}. {choice_dict[choice][0]}")
+                print(f"  {choice}. {choice_dict[choice][0]}")
             check = True
             while check:
                 selection = input(prompt)
@@ -114,7 +129,7 @@ class Arena:
             for hero in heroes:
                 if hero.ch_hp_r > 0 and any(mons.ch_hp_r > 0 for mons in enemies):
                     show_summary()
-                    print(f"\n{hero.ch_name}'s turn.\n")
+                    print(f"\n-> {hero.ch_name}'s turn.\n")
 
                     # loop until the char's action success
                     while True:
