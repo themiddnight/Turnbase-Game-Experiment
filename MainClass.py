@@ -1,5 +1,6 @@
 import random
 
+
 class Human:
     def __init__(self, ch_name):
         self.ch_type = "Human"
@@ -73,21 +74,6 @@ class Warrior:
         print("LUK: ", round(self.ch_luk * 100), "%")
         print()
 
-    def show_hp_bar(self):
-        bar_str = self.__generate_bar(self.ch_hp, self.ch_hp_r)
-        if self.ch_hp_r > 0:
-            print(f"HP: {bar_str} {self.ch_hp_r}/{self.ch_hp}")
-        else:
-            print(f"{self.ch_name} is dead ❌")
-
-    def show_mp_bar(self):
-        bar_str = self.__generate_bar(self.ch_mp, self.ch_mp_r)
-        if self.ch_hp_r > 0:
-            print(f"MP: {bar_str} {self.ch_mp_r}/{self.ch_mp}")
-        else:
-            print(f"{self.ch_name} is dead ❌")
-        print()
-
     def get_hp_bar(self):
         bar_str = self.__generate_bar(self.ch_hp, self.ch_hp_r)
         if self.ch_hp_r > 0:
@@ -123,16 +109,10 @@ class Warrior:
                 if attack:
                     if critical:
                         self.speak("Bring it on!!")
-                        print(
-                            (
-                                f"- {self.ch_name} attacks "
-                                f"{target.ch_name} 💥{attack} !"
-                            )
-                        )
+                        print((f"- {self.ch_name} attacks "
+                               f"{target.ch_name} 💥{attack} !"))
                     else:
-                        print(
-                            (f"- {self.ch_name} attacks " f"{target.ch_name} 🔪{attack}")
-                        )
+                        print((f"- {self.ch_name} attacks " f"{target.ch_name} 🔪{attack}"))
                 else:
                     print(f"- {self.ch_name} missed 💨")
                     self.speak("Crap!!")

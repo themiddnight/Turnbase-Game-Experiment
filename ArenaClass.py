@@ -2,6 +2,7 @@ import time
 import os
 import random
 
+
 class Arena:
     def __init__(self):
         pass
@@ -19,7 +20,6 @@ class Arena:
                 os.system("cls")  # For Windows
             else:
                 os.system("clear")  # For macOS and Linux
-            # print()
             max_length = max(len(sublist) for sublist in [heroes, enemies])
             ch_disp = []
             for i in range(max_length):
@@ -32,7 +32,6 @@ class Arena:
                 ch_disp.append(row)
 
             j_val = 44
-            # print()
             print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
             print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
             for i in ch_disp:
@@ -179,13 +178,13 @@ class Arena:
                             #    ^^^                   ^^^^^^
                             #   sel_action             *[3]*
                             hero_action = getattr(hero, hero.skill_list[sel_action][3])
-                            # do action: _.action_method(target_obj)
-                            # target_obj <- char_dict:
-                            #   {"number": ["name", object]}
-                            #    ^^^^^^^^           ^^^^^^
-                            #    sel_char           *[1]*
                             target = []
                             for i in sel_char:
+                                # do action: _.action_method(target_obj)
+                                # target_obj <- char_dict:
+                                #   {"number": ["name", object]}
+                                #    ^^^^^^^^           ^^^^^^
+                                #    sel_char           *[1]*
                                 target.append(char_dict[i][1])
                             success = hero_action(target)
                             print()
@@ -204,6 +203,7 @@ class Arena:
             for enemy in enemies:
                 if any(hero.ch_hp_r > 0 for hero in heroes):
                     if enemy.ch_hp_r > 0:
+                        time.sleep(1)
                         enemy_action_choices = list(map(lambda x: x, enemy.skill_list))
                         # random only when 'skill_mana' > 'ch_mp_r'
                         enough_mp_check = True
@@ -228,16 +228,15 @@ class Arena:
                         elif action_mode == 3: # <- self team
                             enemy_action(enemies)
                         print()
-                        time.sleep(1)
                 else:
                     break
-            if any(enemy.ch_hp_r > 0 for enemy in enemies):
-                input("\nPress Enter to continue...")
+            # if any(enemy.ch_hp_r > 0 for enemy in enemies):
+            time.sleep(1)
+            input("\nPress Enter to continue...")
 
         if game_turn == True:
             show_summary()
             if any(hero.ch_hp_r > 0 for hero in heroes):
                 print("\nHEROES ARE WIN!\n")
             else:
-                print("\nALL HEROES ARE DEAD.")
-            print()
+                print("\nALL HEROES ARE DEAD.\n")

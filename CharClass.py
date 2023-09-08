@@ -1,29 +1,36 @@
+"""
+For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName]}
+    - skillMode:
+        - 0 Enemy individual
+        - 1 Enemy team
+        - 2 Hero individual
+        - 3 Hero team
+"""
+
+import json
 import time
 import random
 from MainClass import Human, Monster, Warrior
 
+
+with open("settings.json", "r") as f:
+    class_stats_mlp = json.load(f)["class_stats_mlp"]
+
+
 class Archer(Human, Warrior):
-    def __init__(
-        self, ch_name, ch_hp=10, ch_mp=10, ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5
-    ):
+    def __init__(self, ch_name, ch_hp=10, ch_mp=10, 
+                 ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
         Human.__init__(self, ch_name)
         Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Archer"
-        self.ch_atk = self.ch_atk_i * 1.1
-        self.ch_def = self.ch_def_i * 0.9
-        self.ch_acc = self.ch_acc_i * 0.8
+        self.ch_atk = self.ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
+        self.ch_def = self.ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
+        self.ch_acc = self.ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
         # if 100%, critical chance = 1/5
         self.__critical_factor = self.ch_luk / 5
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"],
-            "2": ["Burst Shoot", 0, 3, "burst_shoot"],
-        }
-        """Key: {skillNumber: [skillName, skillMode, manaUsed, methodName]}.\n
-        skillMode: \n
-        0 Enemy individual \n
-        1 Enemy team \n
-        2 Hero individual \n
-        3 Hero team"""
+            "2": ["Burst Shoot", 0, 3, "burst_shoot"],}
 
     def burst_shoot(self, target):
         if type(target) == list:
@@ -49,19 +56,11 @@ class Archer(Human, Warrior):
                         # print action
                         if attack:
                             if critical:
-                                print(
-                                    (
-                                        f"- {self.ch_name} shot "
-                                        f"{target.ch_name} #{num} 💥{attack} !"
-                                    )
-                                )
+                                print((f"- {self.ch_name} shot "
+                                       f"{target.ch_name} #{num} 💥{attack} !"))
                             else:
-                                print(
-                                    (
-                                        f"- {self.ch_name} shot "
-                                        f"{target.ch_name} #{num} 🏹{attack}"
-                                    )
-                                )
+                                print((f"- {self.ch_name} shot "
+                                       f"{target.ch_name} #{num} 🏹{attack}"))
                         else:
                             print(f"- {self.ch_name} missed 💨")
                             self.speak("Crap!!")
@@ -70,9 +69,7 @@ class Archer(Human, Warrior):
                     print(f"- Total damage: {round(sum(attack_sum), 2)}.")
                     return True
                 else:
-                    print(
-                        (f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing.")
-                    )
+                    print((f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing."))
                     return False
             else:
                 print(f"- {self.ch_name} has not enough MP.")
@@ -83,27 +80,19 @@ class Archer(Human, Warrior):
             return True
 
 class Knight(Human, Warrior):
-    def __init__(
-        self, ch_name, ch_hp=10, ch_mp=10, ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5
-    ):
+    def __init__(self, ch_name, ch_hp=10, ch_mp=10, 
+                 ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
         Human.__init__(self, ch_name)
         Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Knight"
-        self.ch_atk = self.ch_atk_i * 1.3
-        self.ch_def = self.ch_def_i * 1.3
-        self.ch_acc = self.ch_acc_i * 0.7
+        self.ch_atk = self.ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
+        self.ch_def = self.ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
+        self.ch_acc = self.ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
         # if 100%, critical chance = 1/5
         self.__critical_factor = self.ch_luk / 5
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"],
-            "2": ["Hard Attack", 0, 3, "hard_attack"],
-        }
-        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
-        Skill_mode: \n
-        0 Enemy individual \n
-        1 Enemy team \n
-        2 Hero individual \n
-        3 Hero team"""
+            "2": ["Hard Attack", 0, 3, "hard_attack"],}
 
     def hard_attack(self, target):
         if type(target) == list:
@@ -129,27 +118,17 @@ class Knight(Human, Warrior):
                     if attack:
                         if critical:
                             self.speak("Bring it on!!")
-                            print(
-                                (
-                                    f"- {self.ch_name} hard attacks "
-                                    f"{target.ch_name}! 💥💥{attack} !"
-                                )
-                            )
+                            print((f"- {self.ch_name} hard attacks "
+                                   f"{target.ch_name}! 💥💥{attack} !"))
                         else:
-                            print(
-                                (
-                                    f"- {self.ch_name} hard attacks "
-                                    f"{target.ch_name}! 🔪🔪{attack}"
-                                )
-                            )
+                            print((f"- {self.ch_name} hard attacks "
+                                   f"{target.ch_name}! 🔪🔪{attack}"))
                     else:
                         print(f"- {self.ch_name} missed 💨")
                         self.speak("Crap!!")
                     return True
                 else:
-                    print(
-                        (f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing.")
-                    )
+                    print((f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing."))
                     return False
             else:
                 print(f"- {self.ch_name} has not enough MP.")
@@ -161,23 +140,18 @@ class Knight(Human, Warrior):
 
 
 class Priest(Human, Warrior):
-    def __init__(
-        self, ch_name, ch_hp=10, ch_mp=10, ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5
-    ):
+    def __init__(self, ch_name, ch_hp=10, ch_mp=10, 
+                 ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
         Human.__init__(self, ch_name)
         Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Priest"
-        self.ch_atk = self.ch_atk_i * 0.6
-        self.ch_def = self.ch_def_i * 1.2
-        self.ch_acc = self.ch_acc_i * 0.7
+        self.ch_atk = self.ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
+        self.ch_def = self.ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
+        self.ch_acc = self.ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
         self.__heal_value = 3
-        self.skill_list = {"1": ["Attack", 0, 0, "attack"], "2": ["Heal", 2, 3, "heal"]}
-        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
-        Skill_mode: \n
-        0 Enemy individual \n
-        1 Enemy team \n
-        2 Hero individual \n
-        3 Hero team"""
+        self.skill_list = {
+            "1": ["Attack", 0, 0, "attack"], 
+            "2": ["Heal", 2, 3, "heal"]}
 
     def heal(self, target):
         if type(target) == list:
@@ -193,12 +167,8 @@ class Priest(Human, Warrior):
                         target.ch_hp_r = target.ch_hp
                     self.ch_mp_r -= self.skill_list["2"][2]
                     # print action
-                    print(
-                        (
-                            f"- {self.ch_name} heals {target.ch_name} "
-                            f"✨+{self.__heal_value}"
-                        )
-                    )
+                    print((f"- {self.ch_name} heals {target.ch_name} "
+                           f"✨+{self.__heal_value}"))
                     return True
                 else:
                     print(f"- {target.ch_name} died. Can't do anything ❌")
@@ -213,22 +183,17 @@ class Priest(Human, Warrior):
 
 
 class Dragon(Monster, Warrior):
-    def __init__(
-        self, ch_name, ch_hp=10, ch_mp=10, ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5
-    ):
+    def __init__(self, ch_name, ch_hp=10, ch_mp=10, 
+                 ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
         Monster.__init__(self, ch_name)
         Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Dragon"
-        self.ch_atk = self.ch_atk_i * 1.5
-        self.ch_def = self.ch_def_i * 2.2
-        self.ch_acc = self.ch_acc_i * 0.6
-        self.skill_list = {"1": ["Attack", 0, 0, "attack"], "2": ["Burn", 1, 4, "burn"]}
-        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
-        Skill_mode: \n
-        0 Enemy individual \n
-        1 Enemy team \n
-        2 Hero individual \n
-        3 Hero team"""
+        self.ch_atk = self.ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
+        self.ch_def = self.ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
+        self.ch_acc = self.ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.skill_list = {
+            "1": ["Attack", 0, 0, "attack"], 
+            "2": ["Burn", 1, 4, "burn"]}
 
     def burn(self, target):
         if type(target) != list:
@@ -244,16 +209,10 @@ class Dragon(Monster, Warrior):
                         if i.ch_hp_r < 0:
                             i.ch_hp_r = 0
                         # print action
-                        print(
-                            (
-                                f"- {self.ch_name} burns "
-                                f"{i.ch_name}! 🔥🔥{attack}"
-                            )
-                            )
+                        print((f"- {self.ch_name} burns "
+                               f"{i.ch_name}! 🔥🔥{attack}"))
                     else:
-                        print(
-                            (f"- {i.ch_name} is dead ❌ " f"{self.ch_name} do nothing.")
-                        )
+                        print((f"- {i.ch_name} is dead ❌ " f"{self.ch_name} do nothing."))
                 self.ch_mp_r -= self.skill_list["2"][2]
                 return True
             else:
@@ -266,22 +225,17 @@ class Dragon(Monster, Warrior):
 
 
 class Vampire(Monster, Warrior):
-    def __init__(
-        self, ch_name, ch_hp=10, ch_mp=10, ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5
-    ):
+    def __init__(self, ch_name, ch_hp=10, ch_mp=10, 
+                 ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
         Monster.__init__(self, ch_name)
         Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Vampire"
-        self.ch_atk = self.ch_atk_i * 1.0
-        self.ch_def = self.ch_def_i * 1.1
-        self.ch_acc = self.ch_acc_i * 0.8
-        self.skill_list = {"1": ["Attack", 0, 0, "attack"], "2": ["Bite", 0, 3, "bite"]}
-        """Key: {Skill_number: [Skill_name, Skill_mode, Mana_used, Method_name]} \n
-        Skill_mode: \n
-        0 Enemy individual \n
-        1 Enemy team \n
-        2 Hero individual \n
-        3 Hero team"""
+        self.ch_atk = self.ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
+        self.ch_def = self.ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
+        self.ch_acc = self.ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.skill_list = {
+            "1": ["Attack", 0, 0, "attack"], 
+            "2": ["Bite", 0, 3, "bite"]}
 
     def bite(self, target):
         if type(target) == list:
@@ -296,9 +250,7 @@ class Vampire(Monster, Warrior):
                     if target.ch_hp_r < 0:
                         target.ch_hp_r = 0
                     # print action
-                    print(
-                        (f"- {self.ch_name} bites " f"{target.ch_name} 🔪{attack}")
-                    )
+                    print((f"- {self.ch_name} bites " f"{target.ch_name} 🔪{attack}"))
                     self.ch_mp_r -= self.skill_list["2"][2]
                     return True
                 else:
