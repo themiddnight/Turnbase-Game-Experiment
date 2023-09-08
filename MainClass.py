@@ -93,16 +93,18 @@ class Warrior:
         if self.ch_hp_r > 0:
             return f"HP: {bar_str} {self.ch_hp_r}/{self.ch_hp}"
         else:
-            return f"{self.ch_name} is dead ❌"
+            return f"{self.ch_name} is dead."
 
     def get_mp_bar(self):
         bar_str = self.__generate_bar(self.ch_mp, self.ch_mp_r)
         if self.ch_hp_r > 0:
             return f"MP: {bar_str} {self.ch_mp_r}/{self.ch_mp}"
         else:
-            return f"{self.ch_name} is dead ❌"
+            return ""
 
     def attack(self, target):
+        if type(target) == list:
+            target = target[0]
         if self.ch_hp_r > 0:
             if target.ch_hp_r > 0:
                 critical = random.random() < self.__critical_factor

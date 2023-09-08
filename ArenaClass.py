@@ -41,10 +41,10 @@ class Arena:
                 print (f'  - {i[1].ch_name} - {i[1].ch_class}'.ljust(j_val) 
                     if i[1] else '')
 
-                print (f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(
-                    j_val) + '|' if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(
-                    j_val) if i[1] else '')
+                print (f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(j_val) + '|' 
+                    if i[0] else ''.ljust(j_val) + '|', end = '')
+                print (f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(j_val) 
+                    if i[1] else '')
 
                 print (f'    {i[0].get_hp_bar()}'.ljust(j_val) + '|' 
                     if i[0] else ''.ljust(j_val) + '|', end = '')
@@ -53,7 +53,7 @@ class Arena:
 
                 print (f'    {i[0].get_mp_bar()}'.ljust(j_val) + '|' 
                     if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'    {i[0].get_mp_bar()}'.ljust(j_val)
+                print (f'    {i[1].get_mp_bar()}'.ljust(j_val)
                     if i[1] else '')
                 
                 print (
@@ -144,15 +144,26 @@ class Arena:
                         # such as, if the action is 'attack', the list should be enemies
                         # or if 'heal', it shoud be heroes themself
                         action_mode = hero.skill_list[sel_action][1]
+
+                        # 0 Enemy individual, 1 Enemy team, 2 Hero individual, 3 Hero team
                         if action_mode == 0:
                             sel_char_prompt = (f"Which enemy will {hero.ch_name} attack?: ")
+                            char_dict = create_char_dict("enemy", enemies)
+                        elif action_mode == 1:
                             char_dict = create_char_dict("enemy", enemies)
                         elif action_mode == 2:
                             sel_char_prompt = f"Which one will {hero.ch_name} heal?: "
                             char_dict = create_char_dict("hero", heroes)
+                        elif action_mode == 3:
+                            char_dict = create_char_dict("hero", heroes)
 
                         # select target
-                        sel_char = select_choice(False, sel_char_prompt, char_dict)
+                        if action_mode == 0 or action_mode == 2:
+                            sel_char = [select_choice(False, sel_char_prompt, char_dict)]
+                        elif action_mode == 1 or action_mode == 3:
+                            sel_char = []
+                            for i in char_dict:
+                                sel_char.append(i)
                         if sel_char == "b":
                             continue
                         elif sel_char == "q":
@@ -172,7 +183,10 @@ class Arena:
                             #   {"number": ["name", object]}
                             #    ^^^^^^^^           ^^^^^^
                             #    sel_char           *[1]*
-                            success = hero_action(char_dict[sel_char][1])
+                            target = []
+                            for i in sel_char:
+                                target.append(char_dict[i][1])
+                            success = hero_action(target)
                             print()
                             if success:
                                 input("\nPress Enter to continue...")
@@ -192,12 +206,23 @@ class Arena:
                             hero for hero in heroes if hero.ch_hp_r > 0
                         ]
                         hero_target = random.choice(alive_heroes_list)
+                        # random the skill
+                        # if action_mode == 0: <- hero individual
+                        #   random hero
+                        #   enemy.skill(hero_target)
+                        # elif action_mode == 1: <- hero team
+                        #   enemy.skill(heroes)
+                        # elif action_mode == 2: <- self individual
+                        #   random enemy
+                        #   enemy.skill(random enemy)
+                        # elif action_mode == 3: <- self team
+                        #   enemy.skill(enemies)
                         print()
                         enemy.attack(hero_target)
                         time.sleep(1)
                 else:
                     break
-            if any(mons.ch_hp_r > 0 for mons in enemies):
+            if any(enemy.ch_hp_r > 0 for enemy in enemies):
                 input("\nPress Enter to continue...")
 
         if game_turn == True:

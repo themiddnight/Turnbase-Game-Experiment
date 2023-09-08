@@ -26,6 +26,8 @@ class Archer(Human, Warrior):
         3 Hero team"""
 
     def burst_shoot(self, target):
+        if type(target) == list:
+            target = target[0]
         if self.ch_hp_r > 0:
             if self.ch_mp_r >= self.skill_list["2"][2]:
                 if target.ch_hp_r > 0:
@@ -104,6 +106,8 @@ class Knight(Human, Warrior):
         3 Hero team"""
 
     def hard_attack(self, target):
+        if type(target) == list:
+            target = target[0]
         if self.ch_hp_r > 0:
             if self.ch_mp_r >= self.skill_list["2"][2]:
                 if target.ch_hp_r > 0:
@@ -176,6 +180,8 @@ class Priest(Human, Warrior):
         3 Hero team"""
 
     def heal(self, target):
+        if type(target) == list:
+            target = target[0]
         if self.ch_hp_r > 0:
             if self.ch_mp_r >= self.skill_list["2"][2]:
                 if target.ch_hp_r >= target.ch_hp:
@@ -225,7 +231,38 @@ class Dragon(Monster, Warrior):
         3 Hero team"""
 
     def burn(self, target):
-        pass
+        if type(target) != list:
+            target = [target]
+        if self.ch_hp_r > 0:
+            if self.ch_mp_r >= self.skill_list["2"][2]:
+                for i in target:
+                    if i.ch_hp_r > 0:
+                        acc_factor = random.uniform(0.8, 1)
+                        attack = self.ch_atk / (i.ch_def * 0.4)
+                        attack = round(attack * acc_factor, 2)
+                        i.ch_hp_r = round(i.ch_hp_r - attack, 2)
+                        if i.ch_hp_r < 0:
+                            i.ch_hp_r = 0
+                        # print action
+                        print(
+                            (
+                                f"- {self.ch_name} burns "
+                                f"{i.ch_name}! 🔥🔥{attack}"
+                            )
+                            )
+                    else:
+                        print(
+                            (f"- {i.ch_name} is dead ❌ " f"{self.ch_name} do nothing.")
+                        )
+                self.ch_mp_r -= self.skill_list["2"][2]
+                return True
+            else:
+                print(f"- {self.ch_name} has not enough MP.")
+                return False
+        else:
+            self.ch_hp_r = 0
+            print(f"- {self.ch_name} can't do anything ❌")
+            return True
 
 
 class Vampire(Monster, Warrior):
