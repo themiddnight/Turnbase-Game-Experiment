@@ -9,6 +9,8 @@ cyclops = char.Vampire(ch_name="Cyclops")
 
 arenaA = arena.Arena()
 
+kraken.ch_mp_r = 1
+cyclops.ch_mp_r = 1
 if __name__ == "__main__":
-    arenaA.battle(heroes  = [kraken], 
-                  enemies = [cyclops, belatrix, alex])
+    arenaA.battle(heroes  = [belatrix, alex, kevin], 
+                  enemies = [cyclops, kraken])

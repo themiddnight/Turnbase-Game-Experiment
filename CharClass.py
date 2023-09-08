@@ -284,4 +284,30 @@ class Vampire(Monster, Warrior):
         3 Hero team"""
 
     def bite(self, target):
-        pass
+        if type(target) == list:
+            target = target[0]
+        if self.ch_hp_r > 0:
+            if self.ch_mp_r >= self.skill_list["2"][2]:
+                if target.ch_hp_r > 0:
+                    acc_factor = random.uniform(self.ch_acc, 1)
+                    attack = self.ch_atk / (target.ch_def * 0.3)
+                    attack = round(attack * acc_factor, 2)
+                    target.ch_hp_r = round(target.ch_hp_r - attack, 2)
+                    if target.ch_hp_r < 0:
+                        target.ch_hp_r = 0
+                    # print action
+                    print(
+                        (f"- {self.ch_name} bites " f"{target.ch_name} 🔪{attack}")
+                    )
+                    self.ch_mp_r -= self.skill_list["2"][2]
+                    return True
+                else:
+                    print((f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing."))
+                    return False
+            else:
+                print(f"- {self.ch_name} has not enough MP.")
+                return False
+        else:
+            self.ch_hp_r = 0
+            print(f"- {self.ch_name} can't do anything ❌")
+            return True

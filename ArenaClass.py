@@ -164,9 +164,10 @@ class Arena:
                             sel_char = []
                             for i in char_dict:
                                 sel_char.append(i)
-                        if sel_char == "b":
+
+                        if sel_char[0] == "b":
                             continue
-                        elif sel_char == "q":
+                        elif sel_char[0] == "q":
                             game_turn = False
                             break
                         else:
@@ -198,27 +199,35 @@ class Arena:
             if game_turn == False:
                 break
             show_summary()
+            print()
             # iterate enemy turns
             for enemy in enemies:
                 if any(hero.ch_hp_r > 0 for hero in heroes):
                     if enemy.ch_hp_r > 0:
-                        alive_heroes_list = [
-                            hero for hero in heroes if hero.ch_hp_r > 0
-                        ]
-                        hero_target = random.choice(alive_heroes_list)
-                        # random the skill
-                        # if action_mode == 0: <- hero individual
-                        #   random hero
-                        #   enemy.skill(hero_target)
-                        # elif action_mode == 1: <- hero team
-                        #   enemy.skill(heroes)
-                        # elif action_mode == 2: <- self individual
-                        #   random enemy
-                        #   enemy.skill(random enemy)
-                        # elif action_mode == 3: <- self team
-                        #   enemy.skill(enemies)
+                        enemy_action_choices = list(map(lambda x: x, enemy.skill_list))
+                        # random only when 'skill_mana' > 'ch_mp_r'
+                        enough_mp_check = True
+                        while enough_mp_check:
+                            enemy_action_choice = random.choice(enemy_action_choices)
+                            if enemy.ch_mp_r >= enemy.skill_list[enemy_action_choice][2]:
+                                enough_mp_check = False
+                        enemy_action = getattr(enemy, enemy.skill_list[enemy_action_choice][3])
+                        action_mode = enemy.skill_list[enemy_action_choice][1]
+                        if action_mode == 0: #<- hero individual
+                            alive_heroes_list = [hero for hero in heroes if hero.ch_hp_r > 0]
+                            # alive_heroes_list = filter(lambda hero: hero.ch_hp_r > 0, heroes)
+                            hero_target = random.choice(alive_heroes_list)
+                            enemy_action(hero_target)
+                        elif action_mode == 1: # <- hero team
+                            enemy_action(heroes)
+                        elif action_mode == 2: # <- self individual
+                            alive_enemies_list = [enmy for enmy in enemies if enemy.ch_hp_r > 0]
+                            # alive_enemies_list = filter(lambda enemy: enemy.ch_hp_r > 0, enemies)
+                            enemy_target = random.choice(alive_enemies_list)
+                            enemy_action(enemy_target)
+                        elif action_mode == 3: # <- self team
+                            enemy_action(enemies)
                         print()
-                        enemy.attack(hero_target)
                         time.sleep(1)
                 else:
                     break
