@@ -1,207 +1,216 @@
 import time
 import os
 import random
+from CharClass import Knight, Dragon
 
 
 class Arena:
     def __init__(self, increase_hp=0, increase_mp=0):
         self.increase_hp = increase_hp
         self.increase_mp = increase_mp
+        self.heroes  = [Knight(ch_name = "Sir Placeholder")]
+        self.enemies = [Dragon(ch_name = "The Placeholder")]
 
-    def battle(self, heroes:list, enemies:list):
+    def set_characters(self, heroes:list, enemies:list):
+        self.heroes  = heroes 
+        self.enemies = enemies
         # shuffle the characters list
-        random.shuffle(heroes)
-        random.shuffle(enemies)
+        random.shuffle(self.heroes)
+        random.shuffle(self.enemies)
 
-        def show_summary():
-            """
-            Clear screen and show updated status of characters.
-            """
-            if os.name == "nt":
-                os.system("cls")  # For Windows
-            else:
-                os.system("clear")  # For macOS and Linux
-            max_length = max(len(sublist) for sublist in [heroes, enemies])
-            ch_disp = []
-            for i in range(max_length):
-                row = []
-                for sublist in [heroes, enemies]:
-                    if i < len(sublist):
-                        row.append(sublist[i])
-                    else:
-                        row.append(None)
-                ch_disp.append(row)
-
-            j_val = 44
-            print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
-            print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
-            for i in ch_disp:
-                if i[0]:
-                    name0, statsymbol0 = i[0].get_title()
-                    title0 = f'  • {name0}'.ljust(j_val - statsymbol0)
-                    stats0 = f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(j_val)
-                    hpbar0 = f'    {i[0].get_hp_bar()}'.ljust(j_val)
-                    mpbar0 = f'    {i[0].get_mp_bar()}'.ljust(j_val)
-                else: 
-                    title0 = ''.ljust(j_val)
-                    stats0 = ''.ljust(j_val)
-                    hpbar0 = ''.ljust(j_val)
-                    mpbar0 = ''.ljust(j_val)
-                if i[1]: 
-                    name1, statsymbol1 = i[1].get_title()
-                    title1 = f'  • {name1}'.ljust(j_val - statsymbol1)
-                    stats1 = f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(j_val)
-                    hpbar1 = f'    {i[1].get_hp_bar()}'.ljust(j_val) 
-                    mpbar1 = f'    {i[1].get_mp_bar()}'.ljust(j_val) 
-                else: 
-                    title1 = ''.ljust(j_val)
-                    stats1 = ''.ljust(j_val)
-                    hpbar1 = ''.ljust(j_val)
-                    mpbar1 = ''.ljust(j_val)
-
-                print (f"{title0}|{title1}")
-                print (f"{stats0}|{stats1}")
-                print (f"{hpbar0}|{hpbar1}")
-                print (f"{mpbar0}|{mpbar1}")
-                print (f'   '.ljust(j_val) + '|' + f'   '.ljust(j_val))
-                
-            print (f'{"":=^{j_val*2+1}}')
-            print("* Stats: ATK / DEF / ACC / LUK")
-            print("* Input b to go back, q for quit.")
-
-        def select_choice(isRoot, prompt, choice_dict):
-            """
-            For showing actions or target list and validating user input. If invalid, loop until it valid.
-                - isRoot: if isRoot is true, user can't input b for back
-                - prompt: For showing input prompt.
-                - action_dict: The dict for choices list. <- { "number": ["name", ... ] }
-                - -> output: A validated string of input.
-            """
-            for choice in choice_dict:
-                print(f"  {choice}. {choice_dict[choice][0]}")
-            check = True
-            while check:
-                selection = input(prompt)
-                print()
-                if isRoot:
-                    if selection == "q":
-                        check = False
-                    elif selection == "b":
-                        print("No back! Try again")
-                    elif selection.isnumeric() == False:
-                        print("Invalid input! Try again")
-                    elif int(selection) > len(choice_dict):
-                        print("The input exceeds the list! Try again")
-                    else:
-                        check = False
+    def __select_choice(self, isRoot, prompt, choice_dict):
+        """
+        For showing actions or target list and validating user input. If invalid, loop until it valid.
+            - isRoot: if isRoot is true, user can't input b for back
+            - prompt: For showing input prompt.
+            - action_dict: The dict for choices list. <- { "number": ["name", ... ] }
+            - -> output: A validated string of input.
+        """
+        for choice in choice_dict:
+            print(f"  {choice}. {choice_dict[choice][0]}")
+        check = True
+        while check:
+            selection = input(prompt)
+            print()
+            if isRoot:
+                if selection == "q":
+                    check = False
+                elif selection == "b":
+                    print("No back! Try again")
+                elif selection.isnumeric() == False:
+                    print("Invalid input! Try again")
+                elif int(selection) > len(choice_dict):
+                    print("The input exceeds the list! Try again")
                 else:
-                    if selection == "b" or selection == "q":
-                        check = False
-                    elif selection.isnumeric() == False:
-                        print("Invalid input! Try again")
-                    elif int(selection) > len(choice_dict):
-                        print("The input exceeds the list! Try again")
-                    else:
-                        check = False
-            return selection
+                    check = False
+            else:
+                if selection == "b" or selection == "q":
+                    check = False
+                elif selection.isnumeric() == False:
+                    print("Invalid input! Try again")
+                elif int(selection) > len(choice_dict):
+                    print("The input exceeds the list! Try again")
+                else:
+                    check = False
+        return selection
 
-        def create_char_dict(team, charObj_list):
-            """
-            Create char dict from char objects list for showing input command.
-            Parameter:
-                - team: Should be 'hero' or 'enemy'.
-                - charObj_list: List of character's object.
-                - -> Output: { "number": ["name", object] }
-            """
-            char_dict = {}
-            num = 1
-            for char in charObj_list:
-                # if team == "enemy":
-                #     if char.ch_hp_r > 0:
-                #         # char_dict = {number : [Name, Object]}
-                #         char_dict[f"{num}"] = [char.ch_name, char]
-                #         num += 1
-                # else:
-                # char_dict = {number : [Name, Object]}
-                char_dict[f"{num}"] = [char.ch_name, char]
-                num += 1
-            return char_dict
+    def __create_char_dict(self, team, charObj_list):
+        """
+        Create char dict from char objects list for showing input command.
+        Parameter:
+            - team: Should be 'hero' or 'enemy'.
+            - charObj_list: List of character's object.
+            - -> Output: { "number": ["name", object] }
+        """
+        char_dict = {}
+        num = 1
+        for char in charObj_list:
+            # if team == "enemy":
+            #     if char.ch_hp_r > 0:
+            #         # char_dict = {number : [Name, Object]}
+            #         char_dict[f"{num}"] = [char.ch_name, char]
+            #         num += 1
+            # else:
+            # char_dict = {number : [Name, Object]}
+            char_dict[f"{num}"] = [char.ch_name, char]
+            num += 1
+        return char_dict
 
-        game_turn = True  # for checking if user are not quit
+    def show_summary(self):
+        """
+        Clear screen and show updated status of characters.
+        """
+        if os.name == "nt":
+            os.system("cls")  # For Windows
+        else:
+            os.system("clear")  # For macOS and Linux
+        max_length = max(len(sublist) for sublist in [self.heroes, self.enemies])
+        ch_disp = []
+        for i in range(max_length):
+            row = []
+            for sublist in [self.heroes, self.enemies]:
+                if i < len(sublist):
+                    row.append(sublist[i])
+                else:
+                    row.append(None)
+            ch_disp.append(row)
+
+        j_val = 44
+        print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
+        print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
+        for i in ch_disp:
+            if i[0]:
+                name0, statsymbol0 = i[0].get_title()
+                title0 = f'  • {name0}'.ljust(j_val - statsymbol0)
+                stats0 = f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(j_val)
+                hpbar0 = f'    {i[0].get_hp_bar()}'.ljust(j_val)
+                mpbar0 = f'    {i[0].get_mp_bar()}'.ljust(j_val)
+            else: 
+                title0 = ''.ljust(j_val)
+                stats0 = ''.ljust(j_val)
+                hpbar0 = ''.ljust(j_val)
+                mpbar0 = ''.ljust(j_val)
+            if i[1]: 
+                name1, statsymbol1 = i[1].get_title()
+                title1 = f'  • {name1}'.ljust(j_val - statsymbol1)
+                stats1 = f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(j_val)
+                hpbar1 = f'    {i[1].get_hp_bar()}'.ljust(j_val) 
+                mpbar1 = f'    {i[1].get_mp_bar()}'.ljust(j_val) 
+            else: 
+                title1 = ''.ljust(j_val)
+                stats1 = ''.ljust(j_val)
+                hpbar1 = ''.ljust(j_val)
+                mpbar1 = ''.ljust(j_val)
+
+            print (f"{title0}|{title1}")
+            print (f"{stats0}|{stats1}")
+            print (f"{hpbar0}|{hpbar1}")
+            print (f"{mpbar0}|{mpbar1}")
+            print (f'   '.ljust(j_val) + '|' + f'   '.ljust(j_val))
+            
+        print (f'{"":=^{j_val*2+1}}')
+        print("* Stats: ATK / DEF / ACC / LUK")
+        print("* Input b to go back, q for quit.")
+        print()
+
+    def battle(self):
+        enter_to_continue_tx = "Press Enter to continue..."
+        user_continue = True  # for checking if user are not quit
         # game loop until one team is all dead
-        while any(hero.ch_hp_r > 0 for hero in heroes) and \
-              any(enemy.ch_hp_r > 0 for enemy in enemies):
+        while any(hero.ch_hp_r > 0 for hero in self.heroes) and \
+            any(enemy.ch_hp_r > 0 for enemy in self.enemies):
             
             # increase hp/mp
-            for hero in heroes:
+            for hero in self.heroes:
                 if hero.ch_hp_r > 0:
                     hero.ch_hp_r = round(hero.ch_hp_r + self.increase_hp, 2)
                     hero.ch_mp_r = round(hero.ch_mp_r + self.increase_mp, 2)
                     if hero.ch_hp_r > hero.ch_hp: hero.ch_hp_r = hero.ch_hp
                     if hero.ch_mp_r > hero.ch_mp: hero.ch_mp_r = hero.ch_mp
-            for enemy in enemies:
+            for enemy in self.enemies:
                 if enemy.ch_hp_r > 0:
                     enemy.ch_hp_r = round(enemy.ch_hp_r + self.increase_hp, 2)
                     enemy.ch_mp_r = round(enemy.ch_mp_r + self.increase_mp, 2)
                     if enemy.ch_hp_r > enemy.ch_hp: enemy.ch_hp_r = enemy.ch_hp
                     if enemy.ch_mp_r > enemy.ch_mp: enemy.ch_mp_r = enemy.ch_mp
             
+            self.show_summary()
+
             # turn trigger
             isStatus = []
-            show_summary()
-            print()
-            for hero in heroes:
+            for hero in self.heroes:
                 isStatus.append(hero.turn_trigger())
-            for enemy in enemies:
+            for enemy in self.enemies:
                 isStatus.append(enemy.turn_trigger())
             if any(isStatus):
                 time.sleep(0.5)
-                input("\nPress Enter to continue...")
+                print()
+                input(f"\n{enter_to_continue_tx}")
 
             # iterate hero turns
-            for hero in heroes:
-                if hero.ch_hp_r > 0 and any(mons.ch_hp_r > 0 for mons in enemies):
-                    show_summary()
-                    print(f"\n-> {hero.ch_name}'s turn.\n")
+            for hero in self.heroes:
+                if hero.ch_hp_r > 0 and any(mons.ch_hp_r > 0 for mons in self.enemies):
+                    self.show_summary()
+                    print(f"-> {hero.ch_name}'s turn.\n")
 
                     # if stunned, report and skip action
                     if hero.stunned:
                         time.sleep(0.5)
                         print(f"- {hero.ch_name} is stunned 🌀")
                         hero.stunned_count -= 1
-                        input("\nPress Enter to continue...")
+                        input(f"\n{enter_to_continue_tx}")
                         continue
 
                     # loop until the char's action success
                     while True:
                         sel_action_prompt = f"What will {hero.ch_name} do?: "
                         # select action
-                        sel_action = select_choice(True, sel_action_prompt, hero.skill_list)
+                        sel_action = self.__select_choice(True, sel_action_prompt, hero.skill_list)
                         if sel_action == "q":
-                            game_turn = False
+                            user_continue = False
                             break
 
                         # check skill mode and setup 'char_dict' - the targets to be action with
-                        # such as, if the action is 'attack', the list should be enemies
-                        # and if 'heal', it shoud be heroes themselves
+                        # such as, if the action is 'attack', the list should be self.enemies
+                        # and if 'heal', it shoud be self.heroes themselves
                         action_mode = hero.skill_list[sel_action][1]
 
                         # 0 Enemy individual, 1 Enemy team, 2 Hero individual, 3 Hero team
                         # more documents in 'CharClass.py'
                         if action_mode == 0:
                             sel_char_prompt = (f"Which enemy will {hero.ch_name} attack?: ")
-                            char_dict = create_char_dict("enemy", enemies)
+                            char_dict = self.__create_char_dict("enemy", self.enemies)
                         elif action_mode == 1:
-                            char_dict = create_char_dict("enemy", enemies)
+                            char_dict = self.__create_char_dict("enemy", self.enemies)
                         elif action_mode == 2:
                             sel_char_prompt = f"Which one will {hero.ch_name} heal?: "
-                            char_dict = create_char_dict("hero", heroes)
+                            char_dict = self.__create_char_dict("hero", self.heroes)
                         elif action_mode == 3:
-                            char_dict = create_char_dict("hero", heroes)
+                            char_dict = self.__create_char_dict("hero", self.heroes)
 
                         # select target
                         if action_mode == 0 or action_mode == 2:
-                            sel_char = [select_choice(False, sel_char_prompt, char_dict)]
+                            sel_char = [self.__select_choice(False, sel_char_prompt, char_dict)]
                         elif action_mode == 1 or action_mode == 3:
                             sel_char = []
                             for i in char_dict:
@@ -210,7 +219,7 @@ class Arena:
                         if sel_char[0] == "b":
                             continue
                         elif sel_char[0] == "q":
-                            game_turn = False
+                            user_continue = False
                             break
                         else:
                             time.sleep(0.5)
@@ -232,22 +241,22 @@ class Arena:
                             success = hero_action(target)
                             print()
                             if success:
-                                input("\nPress Enter to continue...")
+                                input(f"\n{enter_to_continue_tx}")
                                 break
                             else:
                                 print("Try again!")
-                    if game_turn == False:
+                    if user_continue == False:
                         break
                 else:
                     continue
-            if game_turn == False:
+            if user_continue == False:
                 break
-            show_summary()
-            print()
+
+            self.show_summary()
 
             # iterate enemy turns
-            for enemy in enemies:
-                if any(hero.ch_hp_r > 0 for hero in heroes):
+            for enemy in self.enemies:
+                if any(hero.ch_hp_r > 0 for hero in self.heroes):
                     # if stunned, report and skip action
                     if enemy.stunned:
                         time.sleep(1)
@@ -267,30 +276,30 @@ class Arena:
                         enemy_action = getattr(enemy, enemy.skill_list[enemy_action_choice][3])
                         action_mode = enemy.skill_list[enemy_action_choice][1]
                         if action_mode == 0: #<- hero individual
-                            alive_heroes_list = [hero for hero in heroes if hero.ch_hp_r > 0]
-                            # alive_heroes_list = filter(lambda hero: hero.ch_hp_r > 0, heroes)
+                            alive_heroes_list = [hero for hero in self.heroes if hero.ch_hp_r > 0]
+                            # alive_heroes_list = filter(lambda hero: hero.ch_hp_r > 0, self.heroes)
                             hero_target = random.choice(alive_heroes_list)
                             enemy_action(hero_target)
                         elif action_mode == 1: # <- hero team
-                            enemy_action(heroes)
+                            enemy_action(self.heroes)
                         elif action_mode == 2: # <- self individual
-                            alive_enemies_list = [enmy for enmy in enemies if enemy.ch_hp_r > 0]
-                            # alive_enemies_list = filter(lambda enemy: enemy.ch_hp_r > 0, enemies)
+                            alive_enemies_list = [enmy for enmy in self.enemies if enemy.ch_hp_r > 0]
+                            # alive_enemies_list = filter(lambda enemy: enemy.ch_hp_r > 0, self.enemies)
                             enemy_target = random.choice(alive_enemies_list)
                             enemy_action(enemy_target)
                         elif action_mode == 3: # <- self team
-                            enemy_action(enemies)
+                            enemy_action(self.enemies)
                         print()
                 else:
                     break
-            if any(enemy.ch_hp_r > 0 for enemy in enemies):
+            if any(enemy.ch_hp_r > 0 for enemy in self.enemies):
                 time.sleep(1)
-                input("\nPress Enter to continue...")
+                input(f"\n{enter_to_continue_tx}")
 
-        if game_turn == True:
-            show_summary()
-            if any(hero.ch_hp_r > 0 for hero in heroes):
-                print("\nHEROES WIN!\n")
+        if user_continue == True:
+            self.show_summary()
+            if any(hero.ch_hp_r > 0 for hero in self.heroes):
+                print("HEROES WIN!\n")
             else:
-                print("\nHEROES LOSE.\n")
+                print("HEROES LOSE.\n")
             time.sleep(1)

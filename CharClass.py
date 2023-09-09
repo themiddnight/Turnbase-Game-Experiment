@@ -31,7 +31,6 @@ class Archer(Human, Warrior):
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"],
             "2": ["Burst Shoot (3)", 0, 3, "burst_shoot"],}
-        print(battling)
 
     def burst_shoot(self, target):
         if type(target) == list:

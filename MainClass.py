@@ -140,7 +140,6 @@ class Warrior:
                     self.poisoned = False
             else:
                 check.append(False)
-
             if self.burned == True:
                 check.append(True)
                 self.ch_hp_r = round(self.ch_hp_r - burn_dec_value, 2)
@@ -153,7 +152,6 @@ class Warrior:
                     self.burned = False
             else:
                 check.append(False)
-
             if self.stunned == True:
                 if self.stunned_count <= 0:
                     self.stunned_count = 0
