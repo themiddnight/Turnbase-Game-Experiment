@@ -9,7 +9,7 @@
             "Knight": {
                 "ch_atk": 1.3,
                 "ch_def": 1.3,
-                "ch_acc": 0.7
+                "ch_acc": 0.8
             },
             "Priest": {
                 "ch_atk": 0.6,
@@ -19,15 +19,37 @@
         },
         "Monster": {
             "Dragon": {
-                "ch_atk": 1.5,
-                "ch_def": 2.2,
-                "ch_acc": 0.6
+                "ch_atk": 1.2,
+                "ch_def": 1.1,
+                "ch_acc": 0.7
             },
             "Vampire": {
                 "ch_atk": 1.0,
-                "ch_def": 1.1,
+                "ch_def": 1.0,
                 "ch_acc": 0.8
+            },
+            "Golem": {
+                "ch_atk": 1.4,
+                "ch_def": 1.5,
+                "ch_acc": 0.6
             }
+        }
+    },
+    "battling": {
+        "stat_turn": {
+            "//comment": "the turns used to eliminate the status",
+            "poison_count": 4,
+            "burn_count": 3,
+            "stun_count": 1
+        },
+        "hp_dec": {
+            "//comment": "hp decreasing for a turn.",
+            "poison_dec": 0.8,
+            "burn_dec": 1.2
+        },
+        "stat_increase": {
+            "hp": 1,
+            "mp": 1
         }
     }
 }

@@ -4,8 +4,9 @@ import random
 
 
 class Arena:
-    def __init__(self):
-        pass
+    def __init__(self, increase_hp=0, increase_mp=0):
+        self.increase_hp = increase_hp
+        self.increase_mp = increase_mp
 
     def battle(self, heroes:list, enemies:list):
         # shuffle the characters list
@@ -35,28 +36,34 @@ class Arena:
             print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
             print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
             for i in ch_disp:
-                print (f'  - {i[0].ch_name} - {i[0].ch_class}'.ljust(j_val) + '|' 
-                    if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'  - {i[1].ch_name} - {i[1].ch_class}'.ljust(j_val) 
-                    if i[1] else '')
+                if i[0]:
+                    name0, statsymbol0 = i[0].get_title()
+                    title0 = f'  • {name0}'.ljust(j_val - statsymbol0)
+                    stats0 = f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(j_val)
+                    hpbar0 = f'    {i[0].get_hp_bar()}'.ljust(j_val)
+                    mpbar0 = f'    {i[0].get_mp_bar()}'.ljust(j_val)
+                else: 
+                    title0 = ''.ljust(j_val)
+                    stats0 = ''.ljust(j_val)
+                    hpbar0 = ''.ljust(j_val)
+                    mpbar0 = ''.ljust(j_val)
+                if i[1]: 
+                    name1, statsymbol1 = i[1].get_title()
+                    title1 = f'  • {name1}'.ljust(j_val - statsymbol1)
+                    stats1 = f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(j_val)
+                    hpbar1 = f'    {i[1].get_hp_bar()}'.ljust(j_val) 
+                    mpbar1 = f'    {i[1].get_mp_bar()}'.ljust(j_val) 
+                else: 
+                    title1 = ''.ljust(j_val)
+                    stats1 = ''.ljust(j_val)
+                    hpbar1 = ''.ljust(j_val)
+                    mpbar1 = ''.ljust(j_val)
 
-                print (f'    {i[0].ch_atk} / {i[0].ch_def} / {i[0].ch_acc} / {i[0].ch_luk}'.ljust(j_val) + '|' 
-                    if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'    {i[1].ch_atk} / {i[1].ch_def} / {i[1].ch_acc} / {i[1].ch_luk}'.ljust(j_val) 
-                    if i[1] else '')
-
-                print (f'    {i[0].get_hp_bar()}'.ljust(j_val) + '|' 
-                    if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'    {i[1].get_hp_bar()}'.ljust(j_val) 
-                    if i[1] else '')
-
-                print (f'    {i[0].get_mp_bar()}'.ljust(j_val) + '|' 
-                    if i[0] else ''.ljust(j_val) + '|', end = '')
-                print (f'    {i[1].get_mp_bar()}'.ljust(j_val)
-                    if i[1] else '')
-                
-                print (
-                    f'   '.ljust(j_val) + '|' + f'   '.ljust(j_val))
+                print (f"{title0}|{title1}")
+                print (f"{stats0}|{stats1}")
+                print (f"{hpbar0}|{hpbar1}")
+                print (f"{mpbar0}|{mpbar1}")
+                print (f'   '.ljust(j_val) + '|' + f'   '.ljust(j_val))
                 
             print (f'{"":=^{j_val*2+1}}')
             print("* Stats: ATK / DEF / ACC / LUK")
@@ -100,7 +107,7 @@ class Arena:
 
         def create_char_dict(team, charObj_list):
             """
-            Create char dict from char objects list for showing in input command.
+            Create char dict from char objects list for showing input command.
             Parameter:
                 - team: Should be 'hero' or 'enemy'.
                 - charObj_list: List of character's object.
@@ -109,26 +116,61 @@ class Arena:
             char_dict = {}
             num = 1
             for char in charObj_list:
-                if team == "enemy":
-                    if char.ch_hp_r > 0:
-                        # char_dict = {number : [Name, Object]}
-                        char_dict[f"{num}"] = [char.ch_name, char]
-                        num += 1
-                else:
-                    # char_dict = {number : [Name, Object]}
-                    char_dict[f"{num}"] = [char.ch_name, char]
-                    num += 1
+                # if team == "enemy":
+                #     if char.ch_hp_r > 0:
+                #         # char_dict = {number : [Name, Object]}
+                #         char_dict[f"{num}"] = [char.ch_name, char]
+                #         num += 1
+                # else:
+                # char_dict = {number : [Name, Object]}
+                char_dict[f"{num}"] = [char.ch_name, char]
+                num += 1
             return char_dict
 
         game_turn = True  # for checking if user are not quit
         # game loop until one team is all dead
         while any(hero.ch_hp_r > 0 for hero in heroes) and \
-              any(mons.ch_hp_r > 0 for mons in enemies):
+              any(enemy.ch_hp_r > 0 for enemy in enemies):
+            
+            # increase hp/mp
+            for hero in heroes:
+                if hero.ch_hp_r > 0:
+                    hero.ch_hp_r = round(hero.ch_hp_r + self.increase_hp, 2)
+                    hero.ch_mp_r = round(hero.ch_mp_r + self.increase_mp, 2)
+                    if hero.ch_hp_r > hero.ch_hp: hero.ch_hp_r = hero.ch_hp
+                    if hero.ch_mp_r > hero.ch_mp: hero.ch_mp_r = hero.ch_mp
+            for enemy in enemies:
+                if enemy.ch_hp_r > 0:
+                    enemy.ch_hp_r = round(enemy.ch_hp_r + self.increase_hp, 2)
+                    enemy.ch_mp_r = round(enemy.ch_mp_r + self.increase_mp, 2)
+                    if enemy.ch_hp_r > enemy.ch_hp: enemy.ch_hp_r = enemy.ch_hp
+                    if enemy.ch_mp_r > enemy.ch_mp: enemy.ch_mp_r = enemy.ch_mp
+            
+            # turn trigger
+            isStatus = []
+            show_summary()
+            print()
+            for hero in heroes:
+                isStatus.append(hero.turn_trigger())
+            for enemy in enemies:
+                isStatus.append(enemy.turn_trigger())
+            if any(isStatus):
+                time.sleep(0.5)
+                input("\nPress Enter to continue...")
+
             # iterate hero turns
             for hero in heroes:
                 if hero.ch_hp_r > 0 and any(mons.ch_hp_r > 0 for mons in enemies):
                     show_summary()
                     print(f"\n-> {hero.ch_name}'s turn.\n")
+
+                    # if stunned, report and skip action
+                    if hero.stunned:
+                        time.sleep(0.5)
+                        print(f"- {hero.ch_name} is stunned 🌀")
+                        hero.stunned_count -= 1
+                        input("\nPress Enter to continue...")
+                        continue
 
                     # loop until the char's action success
                     while True:
@@ -139,12 +181,13 @@ class Arena:
                             game_turn = False
                             break
 
-                        # check skill mode and setup the 'char_dict' of targets to action with
+                        # check skill mode and setup 'char_dict' - the targets to be action with
                         # such as, if the action is 'attack', the list should be enemies
-                        # or if 'heal', it shoud be heroes themself
+                        # and if 'heal', it shoud be heroes themselves
                         action_mode = hero.skill_list[sel_action][1]
 
                         # 0 Enemy individual, 1 Enemy team, 2 Hero individual, 3 Hero team
+                        # more documents in 'CharClass.py'
                         if action_mode == 0:
                             sel_char_prompt = (f"Which enemy will {hero.ch_name} attack?: ")
                             char_dict = create_char_dict("enemy", enemies)
@@ -191,6 +234,8 @@ class Arena:
                             if success:
                                 input("\nPress Enter to continue...")
                                 break
+                            else:
+                                print("Try again!")
                     if game_turn == False:
                         break
                 else:
@@ -199,13 +244,21 @@ class Arena:
                 break
             show_summary()
             print()
+
             # iterate enemy turns
             for enemy in enemies:
                 if any(hero.ch_hp_r > 0 for hero in heroes):
+                    # if stunned, report and skip action
+                    if enemy.stunned:
+                        time.sleep(1)
+                        print(f"- {enemy.ch_name} is stunned 🌀")
+                        enemy.stunned_count -= 1
+                        print()
+                        continue
                     if enemy.ch_hp_r > 0:
                         time.sleep(1)
-                        enemy_action_choices = list(map(lambda x: x, enemy.skill_list))
                         # random only when 'skill_mana' > 'ch_mp_r'
+                        enemy_action_choices = list(map(lambda x: x, enemy.skill_list))
                         enough_mp_check = True
                         while enough_mp_check:
                             enemy_action_choice = random.choice(enemy_action_choices)
@@ -230,13 +283,14 @@ class Arena:
                         print()
                 else:
                     break
-            # if any(enemy.ch_hp_r > 0 for enemy in enemies):
-            time.sleep(1)
-            input("\nPress Enter to continue...")
+            if any(enemy.ch_hp_r > 0 for enemy in enemies):
+                time.sleep(1)
+                input("\nPress Enter to continue...")
 
         if game_turn == True:
             show_summary()
             if any(hero.ch_hp_r > 0 for hero in heroes):
-                print("\nHEROES ARE WIN!\n")
+                print("\nHEROES WIN!\n")
             else:
-                print("\nALL HEROES ARE DEAD.\n")
+                print("\nHEROES LOSE.\n")
+            time.sleep(1)

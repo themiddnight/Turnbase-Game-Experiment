@@ -1,4 +1,9 @@
 import random
+import json
+
+with open("settings.json", "r") as f:
+    settings = json.load(f)
+    battling = settings["battling"]
 
 
 class Human:
@@ -55,6 +60,12 @@ class Warrior:
         self.ch_def = self.ch_def_i
         self.ch_acc = self.ch_acc_i
         self.ch_luk = self.ch_luk_i
+        self.poisoned = False
+        self.burned = False
+        self.stunned = False
+        self.poisoned_count = 0
+        self.burned_count = 0
+        self.stunned_count = 0
         # if 100%, critical chance = 1/5
         self.__critical_factor = self.ch_luk / 5
 
@@ -74,12 +85,36 @@ class Warrior:
         print("LUK: ", round(self.ch_luk * 100), "%")
         print()
 
+    def get_title(self):
+        """
+        Return [Title, Symbol counts]\n
+        emoji_char_count:
+            - 'ljust' doesn't detect the emoji characters. 
+            So we need to get the count of it to subtract the ljust when printed.
+        """
+        name = f"{self.ch_name} - {self.ch_class}"
+        status_list = []
+        emoji_char_count = 0
+        if self.poisoned == True: 
+            status_list.append("👿")
+            emoji_char_count += 1
+        if self.burned == True: 
+            status_list.append("🔥")
+            emoji_char_count += 1
+        if self.stunned == True: 
+            status_list.append("🌀")
+            emoji_char_count += 1
+        if status_list: title = f"{name} {''.join(status_list)}"
+        else: title = name
+        return title, emoji_char_count
+
+
     def get_hp_bar(self):
         bar_str = self.__generate_bar(self.ch_hp, self.ch_hp_r)
         if self.ch_hp_r > 0:
             return f"HP: {bar_str} {self.ch_hp_r}/{self.ch_hp}"
         else:
-            return f"{self.ch_name} is dead."
+            return f"X {self.ch_name} is inactive."
 
     def get_mp_bar(self):
         bar_str = self.__generate_bar(self.ch_mp, self.ch_mp_r)
@@ -87,6 +122,45 @@ class Warrior:
             return f"MP: {bar_str} {self.ch_mp_r}/{self.ch_mp}"
         else:
             return ""
+        
+    def turn_trigger(self):
+        poison_dec_value = battling["hp_dec"]["poison_dec"]
+        burn_dec_value = battling["hp_dec"]["burn_dec"]
+        check = []
+        if self.ch_hp_r > 0:
+            if self.poisoned == True:
+                check.append(True)
+                self.ch_hp_r = round(self.ch_hp_r - poison_dec_value, 2)
+                print(f"- {self.ch_name} is poisoned 👿-{poison_dec_value}")
+                if self.ch_hp_r < 0:
+                    self.ch_hp_r = 0
+                self.poisoned_count -= 1
+                if self.poisoned_count <= 0:
+                    self.poisoned_count = 0
+                    self.poisoned = False
+            else:
+                check.append(False)
+
+            if self.burned == True:
+                check.append(True)
+                self.ch_hp_r = round(self.ch_hp_r - burn_dec_value, 2)
+                print(f"- {self.ch_name} is burned 🔥-{burn_dec_value}")
+                if self.ch_hp_r < 0:
+                    self.ch_hp_r = 0
+                self.burned_count -= 1
+                if self.burned_count <= 0:
+                    self.burned_count = 0
+                    self.burned = False
+            else:
+                check.append(False)
+
+            if self.stunned == True:
+                if self.stunned_count <= 0:
+                    self.stunned_count = 0
+                    self.stunned = False
+        else:
+            self.burned = False
+        return any(check)
 
     def attack(self, target):
         if type(target) == list:
@@ -118,7 +192,7 @@ class Warrior:
                     self.speak("Crap!!")
                 return True
             else:
-                print((f"- {target.ch_name} is dead ❌ " f"{self.ch_name} do nothing."))
+                print((f"- {target.ch_name} is inactive ❌ " f"{self.ch_name} do nothing."))
                 return False
         else:
             self.ch_hp_r = 0
