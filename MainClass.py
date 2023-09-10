@@ -1,5 +1,5 @@
-import random
 import json
+from SkillClass import Attack
 
 with open("settings.json", "r") as f:
     settings = json.load(f)
@@ -47,27 +47,26 @@ class Monster:
 class Warrior:
     def __init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk):
         # r for remaining.
-        self.ch_hp = ch_hp
-        self.ch_hp_r = self.ch_hp
-        self.ch_mp = ch_mp
-        self.ch_mp_r = self.ch_mp
+        self._ch_hp = ch_hp
+        self._ch_mp = ch_mp
+        self.ch_hp_r = self._ch_hp
+        self.ch_mp_r = self._ch_mp
         # i for initial. it will be extra added in each class.
-        self.ch_atk_i = ch_atk
-        self.ch_def_i = ch_def
-        self.ch_acc_i = ch_acc
-        self.ch_luk_i = ch_luk
-        self.ch_atk = self.ch_atk_i
-        self.ch_def = self.ch_def_i
-        self.ch_acc = self.ch_acc_i
-        self.ch_luk = self.ch_luk_i
-        self.poisoned = False
-        self.burned = False
-        self.stunned = False
-        self.poisoned_count = 0
-        self.burned_count = 0
-        self.stunned_count = 0
-        # if 100%, critical chance = 1/5
-        self.__critical_factor = self.ch_luk / 5
+        self._ch_atk_i = ch_atk
+        self._ch_def_i = ch_def
+        self._ch_acc_i = ch_acc
+        self._ch_luk_i = ch_luk
+        self.ch_atk = self._ch_atk_i
+        self.ch_def = self._ch_def_i
+        self.ch_acc = self._ch_acc_i
+        self.ch_luk = self._ch_luk_i
+        self.isPoison = False
+        self.isBurn = False
+        self.isStun = False
+        self.poison_count = 0
+        self.burn_count = 0
+        self.stun_count = 0
+        self.sk_attack = Attack(self)
 
     def __generate_bar(self, max_value, value):
         bar = round((value * 20) / max_value)
@@ -95,13 +94,13 @@ class Warrior:
         name = f"{self.ch_name} - {self.ch_class}"
         status_list = []
         emoji_char_count = 0
-        if self.poisoned == True: 
+        if self.isPoison == True: 
             status_list.append("👿")
             emoji_char_count += 1
-        if self.burned == True: 
+        if self.isBurn == True: 
             status_list.append("🔥")
             emoji_char_count += 1
-        if self.stunned == True: 
+        if self.isStun == True: 
             status_list.append("🌀")
             emoji_char_count += 1
         if status_list: title = f"{name} {''.join(status_list)}"
@@ -110,16 +109,16 @@ class Warrior:
 
 
     def get_hp_bar(self):
-        bar_str = self.__generate_bar(self.ch_hp, self.ch_hp_r)
+        bar_str = self.__generate_bar(self._ch_hp, self.ch_hp_r)
         if self.ch_hp_r > 0:
-            return f"HP: {bar_str} {self.ch_hp_r}/{self.ch_hp}"
+            return f"HP: {bar_str} {self.ch_hp_r}/{self._ch_hp}"
         else:
             return f"X {self.ch_name} is inactive."
 
     def get_mp_bar(self):
-        bar_str = self.__generate_bar(self.ch_mp, self.ch_mp_r)
+        bar_str = self.__generate_bar(self._ch_mp, self.ch_mp_r)
         if self.ch_hp_r > 0:
-            return f"MP: {bar_str} {self.ch_mp_r}/{self.ch_mp}"
+            return f"MP: {bar_str} {self.ch_mp_r}/{self._ch_mp}"
         else:
             return ""
         
@@ -128,71 +127,40 @@ class Warrior:
         burn_dec_value = battling["hp_dec"]["burn_dec"]
         check = []
         if self.ch_hp_r > 0:
-            if self.poisoned == True:
+            if self.isPoison == True:
                 check.append(True)
                 self.ch_hp_r = round(self.ch_hp_r - poison_dec_value, 2)
                 print(f"- {self.ch_name} is poisoned 👿-{poison_dec_value}")
                 if self.ch_hp_r < 0:
                     self.ch_hp_r = 0
-                self.poisoned_count -= 1
-                if self.poisoned_count <= 0:
-                    self.poisoned_count = 0
-                    self.poisoned = False
+                self.poison_count -= 1
+                if self.poison_count <= 0:
+                    self.poison_count = 0
+                    self.isPoison = False
             else:
                 check.append(False)
-            if self.burned == True:
+            if self.isBurn == True:
                 check.append(True)
                 self.ch_hp_r = round(self.ch_hp_r - burn_dec_value, 2)
                 print(f"- {self.ch_name} is burned 🔥-{burn_dec_value}")
                 if self.ch_hp_r < 0:
                     self.ch_hp_r = 0
-                self.burned_count -= 1
-                if self.burned_count <= 0:
-                    self.burned_count = 0
-                    self.burned = False
+                self.burn_count -= 1
+                if self.burn_count <= 0:
+                    self.burn_count = 0
+                    self.isBurn = False
             else:
                 check.append(False)
-            if self.stunned == True:
-                if self.stunned_count <= 0:
-                    self.stunned_count = 0
-                    self.stunned = False
+            if self.isStun == True:
+                if self.stun_count <= 0:
+                    self.stun_count = 0
+                    self.isStun = False
         else:
-            self.burned = False
+            self.isBurn = False
+            self.isPoison = False
+            self.isStun = False
         return any(check)
 
     def attack(self, target):
-        if type(target) == list:
-            target = target[0]
-        if self.ch_hp_r > 0:
-            if target.ch_hp_r > 0:
-                critical = random.random() < self.__critical_factor
-                acc_factor = random.uniform(self.ch_acc, 1)
-                attack = self.ch_atk / (target.ch_def * 0.5)
-                if acc_factor > 0.4:
-                    attack = round(attack * acc_factor, 2)
-                    if critical:
-                        attack = round(attack * 1.5, 2)
-                else:
-                    attack = 0
-                target.ch_hp_r = round(target.ch_hp_r - attack, 2)
-                if target.ch_hp_r < 0:
-                    target.ch_hp_r = 0
-                # print action
-                if attack:
-                    if critical:
-                        self.speak("Bring it on!!")
-                        print((f"- {self.ch_name} attacks "
-                               f"{target.ch_name} 💥{attack} !"))
-                    else:
-                        print((f"- {self.ch_name} attacks " f"{target.ch_name} 🔪{attack}"))
-                else:
-                    print(f"- {self.ch_name} missed 💨")
-                    self.speak("Crap!!")
-                return True
-            else:
-                print((f"- {target.ch_name} is inactive ❌ " f"{self.ch_name} do nothing."))
-                return False
-        else:
-            self.ch_hp_r = 0
-            print(f"- {self.ch_name} can't do anything ❌")
-            return True
+        result = self.sk_attack.attack(target)
+        return result

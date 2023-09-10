@@ -71,7 +71,6 @@ class Arena:
             #         char_dict[f"{num}"] = [char.ch_name, char]
             #         num += 1
             # else:
-            # char_dict = {number : [Name, Object]}
             char_dict[f"{num}"] = [char.ch_name, char]
             num += 1
         return char_dict
@@ -80,21 +79,16 @@ class Arena:
         """
         Clear screen and show updated status of characters.
         """
-        if os.name == "nt":
-            os.system("cls")  # For Windows
-        else:
-            os.system("clear")  # For macOS and Linux
+        os.system('cls' if os.name == 'nt' else 'clear')
+        # rotate table
         max_length = max(len(sublist) for sublist in [self.heroes, self.enemies])
         ch_disp = []
         for i in range(max_length):
             row = []
             for sublist in [self.heroes, self.enemies]:
-                if i < len(sublist):
-                    row.append(sublist[i])
-                else:
-                    row.append(None)
+                row.append(sublist[i]) if i < len(sublist) else row.append(None)
             ch_disp.append(row)
-
+        # print
         j_val = 44
         print (f'{"  HEROES  ":=^{j_val}}' + '|' + f'{"  ENEMIES  ":=^{j_val}}')
         print (f' '.ljust(j_val) + '|' + f' '.ljust(j_val))
@@ -145,14 +139,14 @@ class Arena:
                 if hero.ch_hp_r > 0:
                     hero.ch_hp_r = round(hero.ch_hp_r + self.increase_hp, 2)
                     hero.ch_mp_r = round(hero.ch_mp_r + self.increase_mp, 2)
-                    if hero.ch_hp_r > hero.ch_hp: hero.ch_hp_r = hero.ch_hp
-                    if hero.ch_mp_r > hero.ch_mp: hero.ch_mp_r = hero.ch_mp
+                    if hero.ch_hp_r > hero._ch_hp: hero.ch_hp_r = hero._ch_hp
+                    if hero.ch_mp_r > hero._ch_mp: hero.ch_mp_r = hero._ch_mp
             for enemy in self.enemies:
                 if enemy.ch_hp_r > 0:
                     enemy.ch_hp_r = round(enemy.ch_hp_r + self.increase_hp, 2)
                     enemy.ch_mp_r = round(enemy.ch_mp_r + self.increase_mp, 2)
-                    if enemy.ch_hp_r > enemy.ch_hp: enemy.ch_hp_r = enemy.ch_hp
-                    if enemy.ch_mp_r > enemy.ch_mp: enemy.ch_mp_r = enemy.ch_mp
+                    if enemy.ch_hp_r > enemy._ch_hp: enemy.ch_hp_r = enemy._ch_hp
+                    if enemy.ch_mp_r > enemy._ch_mp: enemy.ch_mp_r = enemy._ch_mp
             
             self.show_summary()
 
@@ -174,10 +168,10 @@ class Arena:
                     print(f"-> {hero.ch_name}'s turn.\n")
 
                     # if stunned, report and skip action
-                    if hero.stunned:
+                    if hero.isStun:
                         time.sleep(0.5)
                         print(f"- {hero.ch_name} is stunned 🌀")
-                        hero.stunned_count -= 1
+                        hero.stun_count -= 1
                         input(f"\n{enter_to_continue_tx}")
                         continue
 
@@ -258,10 +252,10 @@ class Arena:
             for enemy in self.enemies:
                 if any(hero.ch_hp_r > 0 for hero in self.heroes):
                     # if stunned, report and skip action
-                    if enemy.stunned:
+                    if enemy.isStun:
                         time.sleep(1)
                         print(f"- {enemy.ch_name} is stunned 🌀")
-                        enemy.stunned_count -= 1
+                        enemy.stun_count -= 1
                         print()
                         continue
                     if enemy.ch_hp_r > 0:
