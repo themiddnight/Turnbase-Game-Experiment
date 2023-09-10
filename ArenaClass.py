@@ -150,13 +150,13 @@ class Arena:
             
             self.show_summary()
 
-            # turn trigger
-            isStatus = []
+            # effects turn trigger
+            isEffects = []
             for hero in self.heroes:
-                isStatus.append(hero.turn_trigger())
+                isEffects.append(hero.effects_turn_trigger())
             for enemy in self.enemies:
-                isStatus.append(enemy.turn_trigger())
-            if any(isStatus):
+                isEffects.append(enemy.effects_turn_trigger())
+            if any(isEffects):
                 time.sleep(0.5)
                 print()
                 input(f"\n{enter_to_continue_tx}")
@@ -179,7 +179,8 @@ class Arena:
                     while True:
                         sel_action_prompt = f"What will {hero.ch_name} do?: "
                         # select action
-                        sel_action = self.__select_choice(True, sel_action_prompt, hero.skill_list)
+                        sel_action = self.__select_choice(True, sel_action_prompt, 
+                                                          hero.skill_list)
                         if sel_action == "q":
                             user_continue = False
                             break
@@ -204,7 +205,8 @@ class Arena:
 
                         # select target
                         if action_mode == 0 or action_mode == 2:
-                            sel_char = [self.__select_choice(False, sel_char_prompt, char_dict)]
+                            sel_char = [self.__select_choice(False, sel_char_prompt, 
+                                                             char_dict)]
                         elif action_mode == 1 or action_mode == 3:
                             sel_char = []
                             for i in char_dict:
@@ -271,14 +273,12 @@ class Arena:
                         action_mode = enemy.skill_list[enemy_action_choice][1]
                         if action_mode == 0: #<- hero individual
                             alive_heroes_list = [hero for hero in self.heroes if hero.ch_hp_r > 0]
-                            # alive_heroes_list = filter(lambda hero: hero.ch_hp_r > 0, self.heroes)
                             hero_target = random.choice(alive_heroes_list)
                             enemy_action(hero_target)
                         elif action_mode == 1: # <- hero team
                             enemy_action(self.heroes)
                         elif action_mode == 2: # <- self individual
                             alive_enemies_list = [enmy for enmy in self.enemies if enemy.ch_hp_r > 0]
-                            # alive_enemies_list = filter(lambda enemy: enemy.ch_hp_r > 0, self.enemies)
                             enemy_target = random.choice(alive_enemies_list)
                             enemy_action(enemy_target)
                         elif action_mode == 3: # <- self team

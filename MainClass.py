@@ -66,7 +66,7 @@ class Warrior:
         self.poison_count = 0
         self.burn_count = 0
         self.stun_count = 0
-        self.sk_attack = Attack(self)
+        self.__sk_attack = Attack(self)
 
     def __generate_bar(self, max_value, value):
         bar = round((value * 20) / max_value)
@@ -122,7 +122,7 @@ class Warrior:
         else:
             return ""
         
-    def turn_trigger(self):
+    def effects_turn_trigger(self):
         poison_dec_value = battling["hp_dec"]["poison_dec"]
         burn_dec_value = battling["hp_dec"]["burn_dec"]
         check = []
@@ -162,5 +162,5 @@ class Warrior:
         return any(check)
 
     def attack(self, target):
-        result = self.sk_attack.attack(target)
+        result = self.__sk_attack.attack(target)
         return result

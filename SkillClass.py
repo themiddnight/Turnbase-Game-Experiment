@@ -46,7 +46,8 @@ class Attack:
             if self.user.ch_mp_r >= self.sk_mana:
                 for i in target:
                     if i.ch_hp_r > 0:
-                        critical = random.random() < self.user.ch_luk / 5 if self.burst_count == 1 else False
+                        critical = random.random() < self.user.ch_luk / 5 \
+                                        if self.burst_count == 1 else False
                         attack_sum = []
                         for num in range(self.burst_count):
                             if self.burst_count > 1:
@@ -64,7 +65,8 @@ class Attack:
                                     attack = round(attack * 1.5, 2)
                                     if self.target_fx:
                                         setattr(i, self.target_fx_attr, True)
-                                        setattr(i, self.target_fx_count_attr, self.target_fx_count)
+                                        setattr(i, self.target_fx_count_attr, 
+                                                self.target_fx_count)
                             else:
                                 attack = 0
                             i.ch_hp_r = round(i.ch_hp_r - attack, 2)
