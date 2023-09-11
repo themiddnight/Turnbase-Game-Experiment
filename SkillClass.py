@@ -8,6 +8,7 @@ For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName
 """
 import random
 import time
+import AudioClass
 
 
 class Attack:
@@ -38,17 +39,26 @@ class Attack:
             self.target_fx_attr = "isStun"
             self.target_fx_count_attr = "stun_count"
             self.target_fx_dec = "stun_dec"
+        self.ac = AudioClass.PlayAudio()
 
-    def attack(self, target):
-        if type(target) != list:
-            target = [target]
+    def __print_sfx(self, text, sound=None):
+        print(text)
+        self.ac.play_sfx(sound)
+
+    def attack(self, targets):
+        if type(targets) != list:
+            targets = [targets]
         if self.user.ch_hp_r > 0:
             if self.user.ch_mp_r >= self.sk_mana:
-                for i in target:
-                    if i.ch_hp_r > 0:
-                        critical = random.random() < self.user.ch_luk / 5 \
-                                        if self.burst_count == 1 else False
+                # for group attack
+                for target in targets:
+                    if target.ch_hp_r > 0:
+                        critical = random.random() < self.user.ch_luk / 5
+                        if critical and type(targets) != list:
+                            self.user.speak(random.choice(self.user_crit_words))
+                            time.sleep(1)
                         attack_sum = []
+                        # for burst attack
                         for num in range(self.burst_count):
                             if self.burst_count > 1:
                                 time.sleep(0.1)
@@ -57,52 +67,54 @@ class Attack:
                                 count =  ""
                             # if 100%, critical chance = 1/5
                             acc_factor = random.uniform(self.user.ch_acc, 1)
-                            attack = self.user.ch_atk / (i.ch_def * self.target_def_factor)
+                            attack = self.user.ch_atk / (target.ch_def * self.target_def_factor)
                             effect_factor = random.uniform(0, 1) <= self.target_fx_prob
                             if acc_factor > 0.3:
                                 attack = round(attack * acc_factor, 2)
-                                if critical:
+                                # critical only individual attack
+                                if critical and type(targets) != list:
                                     attack = round(attack * 1.5, 2)
                                     if self.target_fx:
-                                        setattr(i, self.target_fx_attr, True)
-                                        setattr(i, self.target_fx_count_attr, 
+                                        setattr(target, self.target_fx_attr, True)
+                                        setattr(target, self.target_fx_count_attr, 
                                                 self.target_fx_count)
                             else:
                                 attack = 0
-                            i.ch_hp_r = round(i.ch_hp_r - attack, 2)
+                            target.ch_hp_r = round(target.ch_hp_r - attack, 2)
                             if self.target_fx and effect_factor and attack:
-                                setattr(i, self.target_fx_attr, True)
-                                setattr(i, self.target_fx_count_attr, self.target_fx_count)
-                            if i.ch_hp_r < 0:
-                                i.ch_hp_r = 0
+                                setattr(target, self.target_fx_attr, True)
+                                setattr(target, self.target_fx_count_attr, self.target_fx_count)
+                            if target.ch_hp_r < 0:
+                                target.ch_hp_r = 0
                             attack_sum.append(attack)
                             # print action
                             if attack:
                                 if critical:
-                                    self.user.speak(random.choice(self.user_crit_words))
-                                    print((f"- {self.user.ch_name} {self.atk_word} "
-                                        f"{i.ch_name} {count} 💥{attack} !"))
+                                    self.__print_sfx((f"- {self.user.ch_name} {self.atk_word} "
+                                                      f"{target.ch_name} {count} 💥{attack} !"),
+                                                      "attack")
                                 else:
-                                    print((f"- {self.user.ch_name} {self.atk_word} " 
-                                        f"{i.ch_name} {count} {self.atk_icon}{attack}"))
+                                    self.__print_sfx((f"- {self.user.ch_name} {self.atk_word} " 
+                                                      f"{target.ch_name} {count} {self.atk_icon}{attack}"),
+                                                      "attack")
                             else:
-                                print(f"- {self.user.ch_name} missed 💨")
+                                self.__print_sfx(f"- {self.user.ch_name} missed 💨", "fail")
                                 self.user.speak(random.choice(self.user_missed_words))
                         if self.burst_count > 1:
                             print(f"- Total damage: {round(sum(attack_sum), 2)}")
                     else:
-                        print((f"- {i.ch_name} is inactive ❌ " 
-                            f"{self.user.ch_name} do nothing."))
-                        if len(target) == 1:
+                        self.__print_sfx((f"- {target.ch_name} is inactive ❌ " 
+                                          f"{self.user.ch_name} do nothing."), "fail")
+                        if len(targets) == 1:
                             return False
                 self.user.ch_mp_r = round(self.user.ch_mp_r - self.sk_mana, 2)
                 return True
             else:
-                print(f"- {self.user.ch_name} has not enough MP.")
+                self.__print_sfx(f"- {self.user.ch_name} has not enough MP.", "fail")
                 return False
         else:
             self.user.ch_hp_r = 0
-            print(f"- {self.user.ch_name} can't do anything ❌")
+            self.__print_sfx(f"- {self.user.ch_name} can't do anything ❌", "fail")
             return True
 
 
@@ -119,34 +131,39 @@ class Heal:
         self.heal_word = heal_word
         self.heal_icon = heal_icon
         self.speak_words = ["With the bless of godness!!"]
+        self.ac = AudioClass.PlayAudio()
 
-    def heal(self, target):
-        if type(target) != list:
-            target = [target]
+    def __print_sfx(self, text, sound=None):
+        print(text)
+        self.ac.play_sfx(sound)
+
+    def heal(self, targets):
+        if type(targets) != list:
+            targets = [targets]
         if self.user.ch_hp_r > 0:
             if self.user.ch_mp_r >= self.sk_mana:
-                for i in target:
-                    if i.ch_hp_r >= i._ch_hp:
-                        print(f"- {i.ch_name}'s has fulled already.")
-                        continue
-                    elif i.ch_hp_r > 0:
-                        i.ch_hp_r = round(i.ch_hp_r + self.heal_value, 2)
-                        if i.ch_hp_r > i._ch_hp:
-                            i.ch_hp_r = i._ch_hp
+                for target in targets:
+                    if target.ch_hp_r >= target._ch_hp:
+                        self.__print_sfx(f"- {target.ch_name}'s has fulled already.", "fail")
+                        return False
+                    elif target.ch_hp_r > 0:
+                        target.ch_hp_r = round(target.ch_hp_r + self.heal_value, 2)
+                        if target.ch_hp_r > target._ch_hp:
+                            target.ch_hp_r = target._ch_hp
                         # print action
-                        print((f"- {self.user.ch_name} {self.heal_word} {i.ch_name} " 
-                               f"{self.heal_icon}+{self.heal_value}"))
+                        self.__print_sfx((f"- {self.user.ch_name} {self.heal_word} {target.ch_name} " 
+                                          f"{self.heal_icon}+{self.heal_value}"), "heal")
                     else:
-                        print((f"- {i.ch_name} is inactive ❌ " 
-                            f"{self.user.ch_name} do nothing."))
-                        if len(target) == 1:
+                        self.__print_sfx((f"- {target.ch_name} is inactive ❌ " 
+                                          f"{self.user.ch_name} do nothing."), "heal")
+                        if len(targets) == 1:
                             return False
                 self.user.ch_mp_r = round(self.user.ch_mp_r - self.sk_mana, 2)
                 return True
             else:
-                print(f"- {self.user.ch_name} has not enough MP.")
+                self.__print_sfx(f"- {self.user.ch_name} has not enough MP.", "fail")
                 return False
         else:
             self.user.ch_hp_r = 0
-            print(f"- {self.user.ch_name} can't do anything ❌")
+            self.__print_sfx(f"- {self.user.ch_name} can't do anything ❌", "fail")
             return True

@@ -10,7 +10,7 @@ import json
 from MainClass import Human, Monster, Warrior
 import SkillClass as Skill
 
-with open("settings.json", "r") as f:
+with open("data/settings.json", "r") as f:
     settings = json.load(f)
     class_stats_mlp = settings["class_stats_mlp"]
     battling = settings["battling"]

@@ -2,6 +2,7 @@ import time
 import os
 import random
 from CharClass import Knight, Dragon
+import AudioClass
 
 
 class Arena:
@@ -10,13 +11,11 @@ class Arena:
         self.increase_mp = increase_mp
         self.heroes  = [Knight(ch_name = "Sir Placeholder")]
         self.enemies = [Dragon(ch_name = "The Placeholder")]
+        self.ac = AudioClass.PlayAudio()
 
-    def set_characters(self, heroes:list, enemies:list):
-        self.heroes  = heroes 
-        self.enemies = enemies
-        # shuffle the characters list
-        random.shuffle(self.heroes)
-        random.shuffle(self.enemies)
+    def __print_sfx(self, text, sound="pop"):
+        print(text)
+        self.ac.play_sfx(sound)
 
     def __select_choice(self, isRoot, prompt, choice_dict):
         """
@@ -27,7 +26,7 @@ class Arena:
             - -> output: A validated string of input.
         """
         for choice in choice_dict:
-            print(f"  {choice}. {choice_dict[choice][0]}")
+            self.__print_sfx(f"  {choice}. {choice_dict[choice][0]}")
         check = True
         while check:
             selection = input(prompt)
@@ -36,20 +35,20 @@ class Arena:
                 if selection == "q":
                     check = False
                 elif selection == "b":
-                    print("No back! Try again")
+                    self.__print_sfx("No back! Try again", "fail")
                 elif selection.isnumeric() == False:
-                    print("Invalid input! Try again")
+                    self.__print_sfx("Invalid input! Try again", "fail")
                 elif int(selection) > len(choice_dict):
-                    print("The input exceeds the list! Try again")
+                    self.__print_sfx("The input exceeds the list! Try again", "fail")
                 else:
                     check = False
             else:
                 if selection == "b" or selection == "q":
                     check = False
                 elif selection.isnumeric() == False:
-                    print("Invalid input! Try again")
+                    self.__print_sfx("Invalid input! Try again", "fail")
                 elif int(selection) > len(choice_dict):
-                    print("The input exceeds the list! Try again")
+                    self.__print_sfx("The input exceeds the list! Try again", "fail")
                 else:
                     check = False
         return selection
@@ -74,6 +73,13 @@ class Arena:
             char_dict[f"{num}"] = [char.ch_name, char]
             num += 1
         return char_dict
+
+    def set_characters(self, heroes:list, enemies:list):
+        self.heroes  = heroes 
+        self.enemies = enemies
+        # shuffle the characters list
+        random.shuffle(self.heroes)
+        random.shuffle(self.enemies)
 
     def show_summary(self):
         """
@@ -128,6 +134,7 @@ class Arena:
         print()
 
     def battle(self):
+        self.ac.play_battle_music()
         enter_to_continue_tx = "Press Enter to continue..."
         user_continue = True  # for checking if user are not quit
         # game loop until one team is all dead
@@ -157,8 +164,8 @@ class Arena:
             for enemy in self.enemies:
                 isEffects.append(enemy.effects_turn_trigger())
             if any(isEffects):
+                self.ac.play_sfx("fail")
                 time.sleep(0.5)
-                print()
                 input(f"\n{enter_to_continue_tx}")
 
             # iterate hero turns
@@ -170,7 +177,7 @@ class Arena:
                     # if stunned, report and skip action
                     if hero.isStun:
                         time.sleep(0.5)
-                        print(f"- {hero.ch_name} is stunned 🌀")
+                        self.__print_sfx(f"- {hero.ch_name} is stunned 🌀", "fail")
                         hero.stun_count -= 1
                         input(f"\n{enter_to_continue_tx}")
                         continue
@@ -240,7 +247,7 @@ class Arena:
                                 input(f"\n{enter_to_continue_tx}")
                                 break
                             else:
-                                print("Try again!")
+                                self.__print_sfx("Try again!", "fail")
                     if user_continue == False:
                         break
                 else:
@@ -256,7 +263,7 @@ class Arena:
                     # if stunned, report and skip action
                     if enemy.isStun:
                         time.sleep(1)
-                        print(f"- {enemy.ch_name} is stunned 🌀")
+                        self.__print_sfx(f"- {enemy.ch_name} is stunned 🌀", "fail")
                         enemy.stun_count -= 1
                         print()
                         continue
@@ -293,7 +300,9 @@ class Arena:
         if user_continue == True:
             self.show_summary()
             if any(hero.ch_hp_r > 0 for hero in self.heroes):
-                print("HEROES WIN!\n")
+                self.ac.play_win_music()
+                self.__print_sfx("HEROES WIN!\n")
             else:
-                print("HEROES LOSE.\n")
-            time.sleep(1)
+                self.ac.play_lose_music()
+                self.__print_sfx("HEROES LOSE.\n")
+            time.sleep(5)

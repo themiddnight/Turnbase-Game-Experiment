@@ -1,7 +1,8 @@
 import json
 from SkillClass import Attack
+import AudioClass
 
-with open("settings.json", "r") as f:
+with open("data/settings.json", "r") as f:
     settings = json.load(f)
     battling = settings["battling"]
 
@@ -11,17 +12,22 @@ class Human:
         self.ch_type = "Human"
         self.ch_name = ch_name
         self.__ch_rel = {}
+        self.ac = AudioClass.PlayAudio()
+
+    def __print_sfx(self, text, sound="pop"):
+        print(text)
+        self.ac.play_sfx(sound)
 
     def move(self, direction):
-        print(f"{self.ch_name} moved {direction}.")
+        self.__print_sfx(f"{self.ch_name} moved {direction}.")
 
     def speak(self, words="Hi!", target=None):
         if target:
-            print(f'{self.ch_name} talks to {target.ch_name}: "{words}"')
+            self.__print_sfx(f'{self.ch_name} talks to {target.ch_name}: "{words}"')
             self.increase_rel(target.ch_name)
             target.increase_rel(self.ch_name)
         else:
-            print(f'{self.ch_name} said "{words}"')
+            self.__print_sfx(f'{self.ch_name} said "{words}"')
 
     def increase_rel(self, name):
         if name not in self.__ch_rel:
@@ -36,12 +42,17 @@ class Monster:
     def __init__(self, ch_name):
         self.ch_type = "Monster"
         self.ch_name = ch_name
+        self.ac = AudioClass.PlayAudio()
+
+    def __print_sfx(self, text, sound="pop"):
+        print(text)
+        self.ac.play_sfx(sound)
 
     def move(self, direction):
-        print(f"{self.ch_name} moved {direction}.")
+        self.__print_sfx(f"{self.ch_name} moved {direction}.")
 
     def speak(self, words=None):
-        print(f'{self.ch_name} said "WAAHHHHHGHHHH!!!"')
+        self.__print_sfx(f'{self.ch_name} said "WAAHHHHHGHHHH!!!"')
 
 
 class Warrior:
@@ -67,6 +78,11 @@ class Warrior:
         self.burn_count = 0
         self.stun_count = 0
         self.__sk_attack = Attack(self)
+        self.ac = AudioClass.PlayAudio()
+
+    def __print_sfx(self, text, sound="pop"):
+        print(text)
+        self.ac.play_sfx(sound)
 
     def __generate_bar(self, max_value, value):
         bar = round((value * 20) / max_value)
@@ -76,8 +92,8 @@ class Warrior:
 
     def show_init_status(self):
         print(f"{f' {self.ch_name} : {self.ch_class} ':=^25}")
-        print("HP:  ", round(self.ch_hp, 2))
-        print("MP:  ", round(self.ch_mp, 2))
+        print("HP:  ", round(self._ch_hp, 2))
+        print("MP:  ", round(self._ch_mp, 2))
         print("ATK: ", round(self.ch_atk, 2))
         print("DEF: ", round(self.ch_def, 2))
         print("ACC: ", round(self.ch_acc * 100), "%")
@@ -92,20 +108,20 @@ class Warrior:
             So we need to get the count of it to subtract the ljust when printed.
         """
         name = f"{self.ch_name} - {self.ch_class}"
-        status_list = []
-        emoji_char_count = 0
+        effects_list = []
+        emoji_count = 0
         if self.isPoison == True: 
-            status_list.append("👿")
-            emoji_char_count += 1
+            effects_list.append("👿")
+            emoji_count += 1
         if self.isBurn == True: 
-            status_list.append("🔥")
-            emoji_char_count += 1
+            effects_list.append("🔥")
+            emoji_count += 1
         if self.isStun == True: 
-            status_list.append("🌀")
-            emoji_char_count += 1
-        if status_list: title = f"{name} {''.join(status_list)}"
+            effects_list.append("🌀")
+            emoji_count += 1
+        if effects_list: title = f"{name} {''.join(effects_list)}"
         else: title = name
-        return title, emoji_char_count
+        return title, emoji_count
 
 
     def get_hp_bar(self):
@@ -152,6 +168,7 @@ class Warrior:
             else:
                 check.append(False)
             if self.isStun == True:
+                print(f"- {self.ch_name} is stunned 🌀")
                 if self.stun_count <= 0:
                     self.stun_count = 0
                     self.isStun = False
