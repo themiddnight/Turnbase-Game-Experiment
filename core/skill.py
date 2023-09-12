@@ -8,7 +8,7 @@ For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName
 """
 import random
 import time
-import AudioClass
+from . import audio
 
 
 class Attack:
@@ -39,7 +39,7 @@ class Attack:
             self.target_fx_attr = "isStun"
             self.target_fx_count_attr = "stun_count"
             self.target_fx_dec = "stun_dec"
-        self.ac = AudioClass.PlayAudio()
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound=None):
         print(text)
@@ -131,7 +131,7 @@ class Heal:
         self.heal_word = heal_word
         self.heal_icon = heal_icon
         self.speak_words = ["With the bless of godness!!"]
-        self.ac = AudioClass.PlayAudio()
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound=None):
         print(text)

@@ -1,17 +1,17 @@
 import time
 import os
 import random
-from CharClass import Knight, Dragon
-import AudioClass
+from . import char
+from . import audio
 
 
 class Arena:
     def __init__(self, increase_hp=0, increase_mp=0):
         self.increase_hp = increase_hp
         self.increase_mp = increase_mp
-        self.heroes  = [Knight(ch_name = "Sir Placeholder")]
-        self.enemies = [Dragon(ch_name = "The Placeholder")]
-        self.ac = AudioClass.PlayAudio()
+        self.heroes  = [char.Knight(ch_name = "Sir Placeholder")]
+        self.enemies = [char.Dragon(ch_name = "The Placeholder")]
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound="pop"):
         print(text)

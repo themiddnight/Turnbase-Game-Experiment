@@ -1,8 +1,8 @@
 import json
-from SkillClass import Attack
-import AudioClass
+from . import skill
+from . import audio
 
-with open("data/settings.json", "r") as f:
+with open("settings.json", "r") as f:
     settings = json.load(f)
     battling = settings["battling"]
 
@@ -12,7 +12,7 @@ class Human:
         self.ch_type = "Human"
         self.ch_name = ch_name
         self.__ch_rel = {}
-        self.ac = AudioClass.PlayAudio()
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound="pop"):
         print(text)
@@ -42,7 +42,7 @@ class Monster:
     def __init__(self, ch_name):
         self.ch_type = "Monster"
         self.ch_name = ch_name
-        self.ac = AudioClass.PlayAudio()
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound="pop"):
         print(text)
@@ -77,8 +77,8 @@ class Warrior:
         self.poison_count = 0
         self.burn_count = 0
         self.stun_count = 0
-        self.__sk_attack = Attack(self)
-        self.ac = AudioClass.PlayAudio()
+        self.__sk_attack = skill.Attack(self)
+        self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound="pop"):
         print(text)

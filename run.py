@@ -1,4 +1,4 @@
-import CharClass as char, ArenaClass as arena
+from core import arena, char
 
 alex     = char.Archer(ch_name="Alex")
 belatrix = char.Knight(ch_name="Belatrix")
