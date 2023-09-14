@@ -1,10 +1,5 @@
 """
-For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName]}
-    - skillMode:
-        - 0 Enemy individual
-        - 1 Enemy team
-        - 2 Hero individual
-        - 3 Hero team
+For create the skill object. The target can be an object or list of objects.
 """
 import random
 import time
@@ -12,6 +7,18 @@ from . import audio
 
 
 class Attack:
+    '''Parameters:
+        - user: the player object
+        - sk_name: skill's name
+        - sk_mana: the amount of mana consumption
+        - burst_count: the count of bursting attack
+        - target_def_factor = 0-1. if 1, the target's def will not effected
+        - target_fx = it can be "stun", "poison", and "burn"
+        - target_fx_count = the count of turns that the target's effect disappeared
+        - target_fx_prob = probability the effect will occur
+        - atk_word: the phrase to show when attack
+        - atk_icon:
+        '''
     def __init__(self, user, sk_name="Attack", sk_mana=0, burst_count=1, 
                  target_def_factor = 0.5, target_fx = None, target_fx_count = 3, 
                  target_fx_prob = 0.3, atk_word="attack", atk_icon="🔪"):
@@ -120,14 +127,11 @@ class Attack:
 
 class Heal:
     def __init__(self, user, sk_name="Heal", sk_mana=3, 
-                 heal_value = 4, heal_buff = False, heal_buff_count = 0, 
-                 heal_word="heal", heal_icon="✨"):
+                 heal_value = 4, heal_word="heal", heal_icon="✨"):
         self.user = user
         self.sk_name = sk_name
         self.sk_mana = sk_mana
         self.heal_value = heal_value
-        self.heal_buff = heal_buff
-        self.heal_buff_count = heal_buff_count
         self.heal_word = heal_word
         self.heal_icon = heal_icon
         self.speak_words = ["With the bless of godness!!"]

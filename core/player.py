@@ -1,5 +1,8 @@
 """
-For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName]}
+The part of Player creation. We can create skill objects to assign to each player's class.
+Each classes have the buff of status. It can be set in 'settings.json'
+"self.skill_list" is just for use in arena.battle()
+    {skillNumber: [skillName, skillMode, manaUsed, methodName]}
     - skillMode:
         - 0 Enemy individual
         - 1 Enemy team

@@ -1,4 +1,3 @@
-import json
 from core import arena, player
 
 heroes  = [

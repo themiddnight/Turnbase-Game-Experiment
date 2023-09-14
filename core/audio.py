@@ -1,3 +1,8 @@
+'''
+This project use 'pygame' for playing audio. 
+If user doesn't have the module, it will skip this part and can be played with no sounds.
+'''
+
 check = True
 try:
     import pygame

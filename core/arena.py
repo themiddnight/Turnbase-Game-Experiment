@@ -1,3 +1,7 @@
+'''
+The battle's rule can be set when created. And set the team fight by "set_characters()".
+If not set, the arena will use the default two characters.
+'''
 import time
 import os
 import random
@@ -7,6 +11,8 @@ from . import audio
 
 class Arena:
     def __init__(self, increase_hp=0, increase_mp=0):
+        '''Parameters:
+            - increase_hp, increase_mp: For set the increment of HP and MP each turn.'''
         self.increase_hp = increase_hp
         self.increase_mp = increase_mp
         self.heroes  = [player.Knight(ch_name = "Sir Placeholder")]

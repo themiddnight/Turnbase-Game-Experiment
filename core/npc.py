@@ -1,3 +1,9 @@
+'''
+The basic classes for create characters.
+Human and Monster can be created for the ordinary NPC.
+Warrior has the battle abilities and functions for the arena, but can't be created standalone.
+So, we can create a player by combined inherit from these classes, as in the player.py
+'''
 import json
 from . import skill
 from . import audio
@@ -15,6 +21,11 @@ class Human:
         self.ac = audio.PlayAudio()
 
     def __print_sfx(self, text, sound="pop"):
+        '''For printing and play sfx.
+        Parameters:
+            - text: Texts to be printed.
+            - sound: Audio file's name to be played. 
+            For now it can be "attack", "fail", "heal", "pop"'''
         print(text)
         self.ac.play_sfx(sound)
 
@@ -22,6 +33,7 @@ class Human:
         self.__print_sfx(f"{self.ch_name} moved {direction}.")
 
     def speak(self, words="Hi!", target=None):
+        '''The character can just speek. If it has a target, it will increase each relationship value.'''
         if target:
             self.__print_sfx(f'{self.ch_name} talks to {target.ch_name}: "{words}"')
             self.increase_rel(target.ch_name)
