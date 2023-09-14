@@ -7,7 +7,7 @@ For "self.skill_list": {skillNumber: [skillName, skillMode, manaUsed, methodName
         - 3 Hero team
 """
 import json
-from . import main
+from . import npc
 from . import skill
 
 with open("settings.json", "r") as f:
@@ -16,15 +16,18 @@ with open("settings.json", "r") as f:
     battling = settings["battling"]
 
 
-class Archer(main.Human, main.Warrior):
+class Archer(npc.Human, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Human.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Human.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Archer"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"],
             "2": ["Burst Shoot (3)", 0, 3, "burst_shoot"]}
@@ -41,15 +44,18 @@ class Archer(main.Human, main.Warrior):
         return result
     
 
-class Knight(main.Human, main.Warrior):
+class Knight(npc.Human, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Human.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Human.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Knight"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"],
             "2": ["Hard Attack (3)", 0, 3, "hard_attack"]}
@@ -67,15 +73,18 @@ class Knight(main.Human, main.Warrior):
         return result
 
 
-class Priest(main.Human, main.Warrior):
+class Priest(npc.Human, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Human.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Human.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Priest"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"], 
             "2": ["Heal (3)", 2, 3, "heal"]}
@@ -88,15 +97,18 @@ class Priest(main.Human, main.Warrior):
         return result
 
 
-class Dragon(main.Monster, main.Warrior):
+class Dragon(npc.Monster, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Monster.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Monster.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Dragon"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"], 
             "2": ["Burn (4)", 1, 4, "burn"]}
@@ -114,15 +126,18 @@ class Dragon(main.Monster, main.Warrior):
         return result
 
 
-class Vampire(main.Monster, main.Warrior):
+class Vampire(npc.Monster, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Monster.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Monster.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Vampire"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"], 
             "2": ["Bite (3)", 0, 3, "bite"]}
@@ -140,15 +155,18 @@ class Vampire(main.Monster, main.Warrior):
         return result
 
 
-class Golem(main.Monster, main.Warrior):
+class Golem(npc.Monster, npc.Warrior):
     def __init__(self, ch_name, ch_hp=20, ch_mp=10, 
                  ch_atk=10, ch_def=10, ch_acc=1, ch_luk=0.5):
-        main.Monster.__init__(self, ch_name)
-        main.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
+        npc.Monster.__init__(self, ch_name)
+        npc.Warrior.__init__(self, ch_hp, ch_mp, ch_atk, ch_def, ch_acc, ch_luk)
         self.ch_class = "Golem"
-        self.ch_atk = self._ch_atk_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"]
-        self.ch_def = self._ch_def_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_def"]
-        self.ch_acc = self._ch_acc_i * class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"]
+        self.ch_atk = round(self._ch_atk_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_atk"], 2)
+        self.ch_def = round(self._ch_def_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_def"], 2)
+        self.ch_acc = round(self._ch_acc_i * 
+                            class_stats_mlp[self.ch_type][self.ch_class]["ch_acc"], 2)
         self.skill_list = {
             "1": ["Attack", 0, 0, "attack"], 
             "2": ["Smash (4)", 0, 4, "smash"]}

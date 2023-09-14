@@ -1,0 +1,78 @@
+{
+    "heroes": {
+        "alex": {
+            "class": "Archer",
+            "attr": {
+                "ch_name": "'Alex'",     
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        },
+        "belatrix": {
+            "class": "Knight",  
+            "attr": {
+                "ch_name": "'Belatrix'", 
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        },
+        "kevin": {
+            "class": "Priest",  
+            "attr": {
+                "ch_name": "'Kevin'",    
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        }
+    },
+    "enemies": {
+        "kraken": {
+            "class": "Dragon",  
+            "attr": {
+                "ch_name": "'Kraken'",   
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        },
+        "cyclops": {
+            "class": "Vampire", 
+            "attr": {
+                "ch_name": "'Cyclops'",  
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        },
+        "garlik": {
+            "class": "Golem",   
+            "attr": {
+                "ch_name": "'Garlik'",   
+                "ch_hp": 20,
+                "ch_mp": 10,
+                "ch_atk": 10,
+                "ch_def": 10,
+                "ch_acc": 1,
+                "ch_luk": 0.5
+            }
+        }
+    }
+}
